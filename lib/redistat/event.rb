@@ -1,17 +1,29 @@
 module Redistat
   class Event
     
-    attr_accessor :label
+    attr_reader :scope
+    attr_reader :label
+    attr_reader :key
     attr_reader :options
     
-    def initialize(scope, options, data = {}, label = nil, time = nil)
-      key = [scope]
-      key << Digest::SHA1.hexdigest(label) if !label.nil?
+    def initialize(scope, label = nil, data = {}, date = nil, options = {})
+      @options = options
+      @scope = scope
+      @key = Key.new(scope, label, date, options)
+      @label = @key.label
+      #TODO ...intialize Redistat::Event
+    end
+    
+    def date
+      @key.date.to_date
+    end
+    
+    def time
+      @key.date.to_time
+    end
+    
+    def save
       
-      time ||= Time.now
-      key << time.to_redistat(options ||= nil)
-      
-      puts key.inspect
     end
     
   end
