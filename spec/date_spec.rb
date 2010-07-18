@@ -21,6 +21,18 @@ describe Redistat::Date do
     [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == now.send(k) }
   end
   
+  it "should convert to Time object" do
+    now = Time.now
+    rdate = Redistat::Date.new(now)
+    rdate.to_time.to_s.should == now.to_s
+  end
+  
+  it "should convert to Date object" do
+    today = Date.today
+    rdate = Redistat::Date.new(today)
+    rdate.to_date.to_s.should == today.to_s
+  end
+  
   it "should convert to string with correct depths" do
     today = Date.today
     rdate = Redistat::Date.new(today)
