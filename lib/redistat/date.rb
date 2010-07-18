@@ -24,14 +24,22 @@ module Redistat
       end
     end
     
+    def to_time
+      ::Time.local(@year, @month, @day, @hour, @min, @sec)
+    end
+    
     def from_date(input)
       [:year, :month, :day].each do |k|
         self.send("#{k}=", input.send(k))
       end
     end
     
+    def to_date
+      ::Date.civil(@year, @month, @day)
+    end
+    
     def from_string(input)
-      from_time(Time.parse(input))
+      from_time(::Time.parse(input))
     end
     
     def to_s(depth = :sec)
