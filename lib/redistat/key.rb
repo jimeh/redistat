@@ -12,16 +12,17 @@ module Redistat
       @options = options
     end
     
-    def label
-      if !@label.nil?
-        (options[:hash_label] ||= true) ? @label.hash : @label.name
-      end
-    end
+    #TODO figure out if direct access to the label object is desired or not
+    # def label
+    #   if !@label.nil?
+    #     (@options[:hash_label] ||= true) ? @label.hash : @label.name
+    #   end
+    # end
     
     def to_s(depth = nil)
       depth ||= @options[:depth] if !@options[:depth].nil?
       key = "#{@scope}"
-      key << "/#{label}" if !label.nil?
+      key << "/#{@label.hash}" if !label.nil?
       key << ":#{@date.to_s(depth)}"
     end
     
