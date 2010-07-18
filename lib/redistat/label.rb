@@ -11,8 +11,7 @@ module Redistat
     end
     
     def save
-      db.set("Redistat:lables:#{@hash}", @name)
-      @saved = true
+      @saved = (db.set("Redistat:lables:#{@hash}", @name) == "OK")
       self
     end
     
