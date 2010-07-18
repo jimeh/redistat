@@ -8,7 +8,7 @@ module Redistat
     def initialize(scope, label = nil, date = nil, options = {})
       @scope = scope
       @label = Label.create(label) if !label.nil?
-      @date = date ||= Time.now
+      @date = Date.new(date ||= Time.now) # Redistat::Date, not ::Date
       @options = options
     end
     
@@ -18,10 +18,11 @@ module Redistat
       end
     end
     
-    def to_s
+    def to_s(depth = nil)
+      depth ||= @options[:depth] if !@options[:depth].nil?
       key = "#{@scope}"
       key << "/#{label}" if !label.nil?
-      key << ":#{@date.to_redistat(@options[:depth] ||= nil)}"
+      key << ":#{@date.to_s(depth)}"
     end
     
   end
