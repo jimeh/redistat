@@ -10,7 +10,7 @@ describe Redistat::Key do
     @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day})
   end
   
-  it "should initialize new keys properly" do
+  it "should initialize properly" do
     @key.scope.should == @scope
     @key.label.should be_instance_of(Redistat::Label)
     @key.label.name.should == @label
