@@ -1,21 +1,26 @@
 module Redistat
   class Event
     
-    attr_reader :scope
     attr_reader :key
     
-    attr_accessor :data
+    attr_accessor :stats
+    attr_accessor :meta
     attr_accessor :options
     
-    def initialize(scope, label = nil, data = {}, date = nil, options = {})
-      @options = options
+    def initialize(scope, label = nil, date = nil, stats = {}, meta = {}, options = {})
+      @options = default_options.merge(options)
       @scope = scope
-      @key = Key.new(scope, label, date, options)
-      #TODO ...intialize Redistat::Event
+      @key = Key.new(scope, label, date, @options)
+      @stats = stats ||= {}
+      @meta = meta ||= {}
+    end
+    
+    def default_options
+      { :depth => :hour,  }
     end
     
     def date
-      @key.date.to_time
+      @key.date
     end
     
     def date=(input)
@@ -24,6 +29,14 @@ module Redistat
     
     alias :time :date
     alias :time= :date=
+    
+    def scope
+      @key.scope
+    end
+    
+    def scope=(input)
+      @key.scope = input
+    end
     
     def label
       @key.label

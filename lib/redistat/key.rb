@@ -3,12 +3,13 @@ module Redistat
     
     attr_accessor :scope
     attr_accessor :date
+    attr_accessor :options
     
     def initialize(scope, label = nil, date = nil, options = {})
       @scope = scope
       self.label = label if !label.nil?
       self.date = date ||= Time.now
-      @options = options
+      self.options = options
     end
     
     def date=(input)

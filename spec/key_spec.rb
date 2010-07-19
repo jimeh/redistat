@@ -30,19 +30,22 @@ describe Redistat::Key do
   it "should abide to hash_label option" do
     @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => true})
     @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
-    
     @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => false})
     @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
   end
   
-  it "should allow changing Date" do
+  it "should allow changing attributes" do
+    # scope
+    @key.scope.should == @scope
+    @scope = "VisitorCount"
+    @key.scope = @scope
+    @key.scope.should == @scope
+    # date
     @key.date.to_time.should == @date
-    now = Time.now
-    @key.date = now
-    @key.date.to_time.should == now
-  end
-  
-  it "should allow changing Label" do
+    @date = Time.now
+    @key.date = @date
+    @key.date.to_time.should == @date
+    # label
     @key.label.should == @label
     @key.label_hash == @label_hash
     @label = "contact_us"
