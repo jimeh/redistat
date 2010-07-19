@@ -4,7 +4,7 @@ describe Redistat::Key do
   
   before(:each) do
     @scope = "PageViews"
-    @label = "/about/us"
+    @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
     @now = Time.now
     @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day})
@@ -29,7 +29,9 @@ describe Redistat::Key do
   end
   
   it "should abide to hash_label option" do
-    @label = "about_us"
+    @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day, :hash_label => true})
+    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
+    
     @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day, :hash_label => false})
     @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
   end
