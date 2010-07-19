@@ -7,6 +7,7 @@ module Redistat
     attr_accessor :hour
     attr_accessor :min
     attr_accessor :sec
+    attr_accessor :usec
     
     def initialize(input)
       if input.is_a?(::Time)
@@ -21,7 +22,7 @@ module Redistat
     end
     
     def to_time
-      ::Time.local(@year, @month, @day, @hour, @min, @sec)
+      ::Time.local(@year, @month, @day, @hour, @min, @sec, @usec)
     end
     
     def to_date
@@ -32,11 +33,16 @@ module Redistat
       to_time.to_i
     end
     
-    def to_string(depth = :sec)
+    def to_string(depth = nil)
+      depth ||= :sec
       output = ""
-      [:year, :month, :day, :hour, :min, :sec].each_with_index do |current, i|
+      [:year, :month, :day, :hour, :min, :sec, :usec].each_with_index do |current, i|
         break if self.send(current).nil?
-        output << self.send(current).to_s.rjust((i <= 0) ? 4 : 2, '0')
+        if current != :usec
+          output << self.send(current).to_s.rjust((i <= 0) ? 4 : 2, '0')
+        else
+          output << "." + self.send(current).to_s.rjust(6, '0')
+        end
         break if current == depth
       end
       output
@@ -51,7 +57,7 @@ module Redistat
     private
     
     def from_time(input)
-      [:year, :month, :day, :hour, :min, :sec].each do |k|
+      [:year, :month, :day, :hour, :min, :sec, :usec].each do |k|
         send("#{k}=", input.send(k))
       end
     end
@@ -60,7 +66,7 @@ module Redistat
       [:year, :month, :day].each do |k|
         send("#{k}=", input.send(k))
       end
-      [:hour, :min, :sec].each do |k|
+      [:hour, :min, :sec, :usec].each do |k|
         send("#{k}=", 0)
       end
     end

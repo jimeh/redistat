@@ -5,7 +5,7 @@ describe Redistat::Date do
   it "should initialize from Time object" do
     now = Time.now
     [Redistat::Date.new(now), now.to_rs].each do |rdate|
-      [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == now.send(k) }
+      [:year, :month, :day, :hour, :min, :sec, :usec].each { |k| rdate.send(k).should == now.send(k) }
     end
   end
   
@@ -13,7 +13,7 @@ describe Redistat::Date do
     today = Date.today
     [Redistat::Date.new(today), today.to_rs].each do |rdate|
       [:year, :month, :day].each { |k| rdate.send(k).should == today.send(k) }
-      [:hour, :min, :sec].each { |k| rdate.send(k).should == 0 }
+      [:hour, :min, :sec, :usec].each { |k| rdate.send(k).should == 0 }
     end
   end
   
@@ -54,6 +54,9 @@ describe Redistat::Date do
     now = Time.now
     [[now, Redistat::Date.new(now)], [today, Redistat::Date.new(today)]].each do |current, rdate|
       props = [:year, :month, :day, :hour, :min, :sec, nil]
+      if rdate.usec > 0
+        rdate.to_s(:usec).should == props.map { |k| current.send(k).to_s.rjust(2, '0') if !k.nil? }.join + "." + current.usec.to_s.rjust(6, '0')
+      end
       props.clone.each do
         rdate.to_s(props.last).should == props.map { |k| current.send(k).to_s.rjust(2, '0') if !k.nil? }.join
         props.pop
