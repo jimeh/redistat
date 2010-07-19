@@ -67,10 +67,12 @@ class Date
   def to_redistat
     Redistat::Date.new(self)
   end
+  alias :to_rs :to_redistat
 end
 
 class Time
   def to_redistat
     Redistat::Date.new(self)
   end
+  alias :to_rs :to_redistat
 end
