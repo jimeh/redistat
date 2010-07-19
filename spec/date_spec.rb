@@ -37,19 +37,13 @@ describe Redistat::Date do
   
   it "should convert to string with correct depths" do
     today = Date.today
-    rdate = Redistat::Date.new(today)
-    props = [:year, :month, :day, nil]
-    props.each do
-      rdate.to_s(props.last).should == props.map { |k| today.send(k).to_s.rjust(2, '0') if !k.nil? }.join
-      props.pop
-    end
-    
     now = Time.now
-    rdate = Redistat::Date.new(now)
-    props = [:year, :month, :day, :hour, :min, :sec, nil]
-    props.each do
-      rdate.to_s(props.last).should == props.map { |k| now.send(k).to_s.rjust(2, '0') if !k.nil? }.join
-      props.pop
+    [[now, Redistat::Date.new(now)], [today, Redistat::Date.new(today)]].each do |current, rdate|
+      props = [:year, :month, :day, :hour, :min, :sec, nil]
+      props.clone.each do
+        rdate.to_s(props.last).should == props.map { |k| current.send(k).to_s.rjust(2, '0') if !k.nil? }.join
+        props.pop
+      end
     end
   end
   
