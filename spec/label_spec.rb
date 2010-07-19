@@ -14,15 +14,15 @@ describe Redistat::Label do
     label = Redistat::Label.new(name)
     label.save
     label.saved?.should be_true
-    redis.get("Redistat:lables:#{label.hash}").should == name
+    db.get("#{Redistat::KEY_LEBELS_PREFIX}#{label.hash}").should == name
     
     name = "/contact/us"
     label = Redistat::Label.create(name)
     label.saved?.should be_true
-    redis.get("Redistat:lables:#{label.hash}").should == name
+    db.get("#{Redistat::KEY_LEBELS_PREFIX}#{label.hash}").should == name
   end
   
-  def redis
+  def db
     Redistat.redis
   end
   
