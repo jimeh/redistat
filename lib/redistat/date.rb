@@ -18,31 +18,12 @@ module Redistat
       end
     end
     
-    def from_time(input)
-      [:year, :month, :day, :hour, :min, :sec].each do |k|
-        send("#{k}=", input.send(k))
-      end
-    end
-    
     def to_time
       ::Time.local(@year, @month, @day, @hour, @min, @sec)
     end
     
-    def from_date(input)
-      [:year, :month, :day].each do |k|
-        send("#{k}=", input.send(k))
-      end
-      [:hour, :min, :sec].each do |k|
-        send("#{k}=", 0)
-      end
-    end
-    
     def to_date
       ::Date.civil(@year, @month, @day)
-    end
-    
-    def from_string(input)
-      from_time(::Time.parse(input))
     end
     
     def to_string(depth = :sec)
@@ -55,9 +36,31 @@ module Redistat
       output
     end
     
-    alias :to_s :to_string
     alias :to_t :to_time
     alias :to_d :to_date
+    alias :to_s :to_string
+    
+    
+    private
+    
+    def from_time(input)
+      [:year, :month, :day, :hour, :min, :sec].each do |k|
+        send("#{k}=", input.send(k))
+      end
+    end
+
+    def from_date(input)
+      [:year, :month, :day].each do |k|
+        send("#{k}=", input.send(k))
+      end
+      [:hour, :min, :sec].each do |k|
+        send("#{k}=", 0)
+      end
+    end
+    
+    def from_string(input)
+      from_time(::Time.parse(input))
+    end
     
   end
 end
