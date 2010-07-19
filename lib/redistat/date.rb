@@ -20,7 +20,7 @@ module Redistat
     
     def from_time(input)
       [:year, :month, :day, :hour, :min, :sec].each do |k|
-        self.send("#{k}=", input.send(k))
+        send("#{k}=", input.send(k))
       end
     end
     
@@ -30,10 +30,10 @@ module Redistat
     
     def from_date(input)
       [:year, :month, :day].each do |k|
-        self.send("#{k}=", input.send(k))
+        send("#{k}=", input.send(k))
       end
       [:hour, :min, :sec].each do |k|
-        self.send("#{k}=", 0)
+        send("#{k}=", 0)
       end
     end
     
