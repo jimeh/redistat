@@ -22,7 +22,7 @@ module Redistat
     def to_s(depth = nil)
       depth ||= @options[:depth] if !@options[:depth].nil?
       key = "#{@scope}"
-      key << "/#{@label.hash}" if !label.nil?
+      key << "/" + ((@options[:hash_label].nil? || @options[:hash_label] == true) ? @label.hash : @label.name) if !label.nil?
       key << ":#{@date.to_s(depth)}"
     end
     

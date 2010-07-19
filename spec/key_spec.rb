@@ -20,12 +20,18 @@ describe Redistat::Key do
   end
   
   it "should convert to string properly" do
-    @key.to_s.should == "#{@scope}/#{@label_hash}:" + [:year, :month, :day].map { |k| @now.send(k).to_s.rjust(2, '0') }.join
+    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
     props = [:year, :month, :day, :hour, :min, :sec]
     props.each do
-      @key.to_s(props.last).should == "#{@scope}/#{@label_hash}:" + props.map { |k| @now.send(k).to_s.rjust(2, '0') if !k.nil? }.join
+      @key.to_s(props.last).should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(props.last)}"
       props.pop
     end
+  end
+  
+  it "should abide to hash_label option" do
+    @label = "about_us"
+    @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day, :hash_label => false})
+    @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
   end
   
 end
