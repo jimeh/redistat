@@ -45,7 +45,7 @@ module Redistat
       from_time(::Time.parse(input))
     end
     
-    def to_s(depth = :sec)
+    def to_string(depth = :sec)
       output = ""
       [:year, :month, :day, :hour, :min, :sec].each_with_index do |current, i|
         break if self.send(current).nil?
@@ -55,7 +55,9 @@ module Redistat
       output
     end
     
-    alias :to_string :to_s
+    alias :to_s :to_string
+    alias :to_t :to_time
+    alias :to_d :to_date
     
   end
 end
