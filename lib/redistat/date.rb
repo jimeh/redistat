@@ -56,3 +56,16 @@ module Redistat
     
   end
 end
+
+
+class Date
+  def to_redistat
+    Redistat::Date.new(self)
+  end
+end
+
+class Time
+  def to_redistat
+    Redistat::Date.new(self)
+  end
+end

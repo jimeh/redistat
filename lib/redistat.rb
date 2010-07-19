@@ -1,10 +1,9 @@
 
 require "redis"
-require "yaml"
+require "date"
 require "time"
 require "digest/sha1"
 
-require "redistat/extensions/date_time"
 require "redistat/database"
 require "redistat/model"
 require "redistat/event"
