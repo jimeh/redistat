@@ -6,7 +6,7 @@ module Redistat
     attr_reader :hash
     
     def initialize(str)
-      @name = str
+      @name = str.to_s
       @hash = Digest::SHA1.hexdigest(@name)
     end
     
