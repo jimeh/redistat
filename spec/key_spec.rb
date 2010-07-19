@@ -6,17 +6,16 @@ describe Redistat::Key do
     @scope = "PageViews"
     @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
-    @now = Time.now
-    @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day})
+    @date = Time.now
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
   end
   
   it "should initialize properly" do
     @key.scope.should == @scope
-    @key.label.should be_instance_of(Redistat::Label)
-    @key.label.name.should == @label
-    @key.label.hash.should == @label_hash
+    @key.label.should == @label
+    @key.label_hash.should == @label_hash
     @key.date.should be_instance_of(Redistat::Date)
-    @key.date.to_time.to_s.should == @now.to_s
+    @key.date.to_time.to_s.should == @date.to_s
   end
   
   it "should convert to string properly" do
@@ -29,11 +28,28 @@ describe Redistat::Key do
   end
   
   it "should abide to hash_label option" do
-    @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day, :hash_label => true})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :hash_label => true})
     @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
     
-    @key = Redistat::Key.new(@scope, @label, @now, {:depth => :day, :hash_label => false})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :hash_label => false})
     @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
+  end
+  
+  it "should allow changing Date" do
+    @key.date.to_time.should == @date
+    now = Time.now
+    @key.date = now
+    @key.date.to_time.should == now
+  end
+  
+  it "should allow changing Label" do
+    @key.label.should == @label
+    @key.label_hash == @label_hash
+    @label = "contact_us"
+    @label_hash = Digest::SHA1.hexdigest(@label)
+    @key.label = @label
+    @key.label.should == @label
+    @key.label_hash == @label_hash
   end
   
 end
