@@ -28,10 +28,10 @@ describe Redistat::Key do
   end
   
   it "should abide to hash_label option" do
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :hash_label => true})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => true})
     @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
     
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :hash_label => false})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => false})
     @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
   end
   
