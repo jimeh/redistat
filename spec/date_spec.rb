@@ -17,6 +17,14 @@ describe Redistat::Date do
     end
   end
   
+  it "should initialize from Fixnum object (UNIX Timestamp)" do
+    now = Time.now.to_i
+    time = Time.at(now)
+    [Redistat::Date.new(now), now.to_rs].each do |rdate|
+      [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == time.send(k) }
+    end
+  end
+  
   it "should initialize from String object" do
     now = Time.now
     rdate = Redistat::Date.new(now.to_s)
@@ -33,6 +41,12 @@ describe Redistat::Date do
     today = Date.today
     rdate = Redistat::Date.new(today)
     rdate.to_date.to_s.should == today.to_s
+  end
+  
+  it "should convert to Fixnum object (UNIX Timestamp)" do
+    now = Time.now
+    rdate = Redistat::Date.new(now)
+    rdate.to_i.should == now.to_i
   end
   
   it "should convert to string with correct depths" do

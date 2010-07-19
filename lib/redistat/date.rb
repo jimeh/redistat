@@ -15,6 +15,8 @@ module Redistat
         from_date(input)
       elsif input.is_a?(::String)
         from_string(input)
+      elsif input.is_a?(::Fixnum)
+        from_integer(input)
       end
     end
     
@@ -24,6 +26,10 @@ module Redistat
     
     def to_date
       ::Date.civil(@year, @month, @day)
+    end
+
+    def to_integer
+      to_time.to_i
     end
     
     def to_string(depth = :sec)
@@ -38,6 +44,7 @@ module Redistat
     
     alias :to_t :to_time
     alias :to_d :to_date
+    alias :to_i :to_integer
     alias :to_s :to_string
     
     
@@ -58,6 +65,10 @@ module Redistat
       end
     end
     
+    def from_integer(input)
+      from_time(::Time.at(input))
+    end
+    
     def from_string(input)
       from_time(::Time.parse(input))
     end
@@ -74,6 +85,13 @@ class Date
 end
 
 class Time
+  def to_redistat
+    Redistat::Date.new(self)
+  end
+  alias :to_rs :to_redistat
+end
+
+class Fixnum
   def to_redistat
     Redistat::Date.new(self)
   end
