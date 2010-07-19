@@ -4,15 +4,17 @@ describe Redistat::Date do
   
   it "should initialize from Time object" do
     now = Time.now
-    rdate = Redistat::Date.new(now)
-    [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == now.send(k) }
+    [Redistat::Date.new(now), now.to_redistat].each do |rdate|
+      [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == now.send(k) }
+    end
   end
   
   it "should initialize from Date object" do
     today = Date.today
-    rdate = Redistat::Date.new(today)
-    [:year, :month, :day].each { |k| rdate.send(k).should == today.send(k) }
-    [:hour, :min, :sec].each { |k| rdate.send(k).should == nil }
+    [Redistat::Date.new(today), today.to_redistat].each do |rdate|
+      [:year, :month, :day].each { |k| rdate.send(k).should == today.send(k) }
+      [:hour, :min, :sec].each { |k| rdate.send(k).should == nil }
+    end
   end
   
   it "should initialize from String object" do
