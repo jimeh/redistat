@@ -32,6 +32,9 @@ module Redistat
       [:year, :month, :day].each do |k|
         self.send("#{k}=", input.send(k))
       end
+      [:hour, :min, :sec].each do |k|
+        self.send("#{k}=", 0)
+      end
     end
     
     def to_date

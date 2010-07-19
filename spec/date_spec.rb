@@ -13,7 +13,7 @@ describe Redistat::Date do
     today = Date.today
     [Redistat::Date.new(today), today.to_redistat].each do |rdate|
       [:year, :month, :day].each { |k| rdate.send(k).should == today.send(k) }
-      [:hour, :min, :sec].each { |k| rdate.send(k).should == nil }
+      [:hour, :min, :sec].each { |k| rdate.send(k).should == 0 }
     end
   end
   
