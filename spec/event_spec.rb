@@ -63,6 +63,8 @@ describe Redistat::Event do
     @event.date.to_s.should == fetched.date.to_s
   end
   
+  it "should store summarized statistics"
+  
   def db
     Redistat.redis
   end
