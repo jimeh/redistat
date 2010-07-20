@@ -33,12 +33,13 @@ module Redistat
       #TODO store sumarized stats
       
       if @options[:store_event]
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :scope, self.scope
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :label, self.label
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :date, self.date.to_time.to_s
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :stats, self.stats.to_json
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :meta, self.meta.to_json
-        db.hset "#{KEY_EVENT_PREFIX}#{@id}", :options, self.options.to_json
+        db.hmset("#{KEY_EVENT_PREFIX}#{@id}",
+                 :scope, self.scope,
+                 :label, self.label,
+                 :date, self.date.to_time.to_s,
+                 :stats, self.stats.to_json,
+                 :meta, self.meta.to_json,
+                 :options, self.options.to_json)
         db.sadd "#{self.scope}#{KEY_EVENT_IDS_SUFFIX}", @id
       end
       @new = false
