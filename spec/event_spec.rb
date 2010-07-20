@@ -13,7 +13,15 @@ describe Redistat::Event do
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options)
   end
   
-  # it "should initialize properly"
+  it "should initialize properly" do
+    @event.scope.should == @scope
+    @event.label.should == @label
+    @event.label_hash.should == @label_hash
+    @event.date.to_time.should == @date
+    @event.stats.should == @stats
+    @event.meta.should == @meta
+    @event.options.should == @event.default_options.merge(@options)
+  end
 
   it "should allow changing attributes" do
     # date
@@ -29,6 +37,34 @@ describe Redistat::Event do
     @event.label = @label
     @event.label.should == @label
     @event.label_hash.should == @label_hash
+  end
+  
+  it "should increment next_id" do
+    Redistat::Event.next_id.should == 1
+    Redistat::Event.next_id.should == 2
+    Redistat::Event.next_id.should == 3
+  end
+  
+  it "should store event properly" do
+    @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options.merge({:store_event => true}))
+    @event.new?.should be_true
+    @event.save
+    @event.new?.should be_false
+    keys = db.keys "*"
+    keys.should include("#{Redistat::KEY_EVENT_PREFIX}#{@event.id}")
+    keys.should include("#{@event.scope}#{Redistat::KEY_EVENT_IDS_SUFFIX}")
+  end
+  
+  it "should find event by id" do
+    @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options.merge({:store_event => true})).save
+    fetched = Redistat::Event.find(@event.id)
+    @event.scope.should == fetched.scope
+    @event.label.should == fetched.label
+    @event.date.to_s.should == fetched.date.to_s
+  end
+  
+  def db
+    Redistat.redis
   end
   
 end

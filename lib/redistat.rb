@@ -2,6 +2,7 @@
 require "redis"
 require "date"
 require "time"
+require "json/pure"
 require "digest/sha1"
 
 require "redistat/database"
