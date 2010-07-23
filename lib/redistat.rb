@@ -6,11 +6,11 @@ require "json/pure"
 require "digest/sha1"
 
 require "redistat/database"
-require "redistat/model"
+require "redistat/date"
 require "redistat/event"
 require "redistat/key"
 require "redistat/label"
-require "redistat/date"
+require "redistat/model"
 require "redistat/scope"
 
 module Redistat
