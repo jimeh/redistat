@@ -69,9 +69,6 @@ module Redistat
       @key.date = input
     end
     
-    alias :time :date
-    alias :time= :date=
-    
     def scope
       @key.scope
     end
