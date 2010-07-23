@@ -28,19 +28,19 @@ module Redistat
     
     def save
       return false if !self.new?
-      @id = self.class.next_id
       
       #TODO store sumarized stats
       
       if @options[:store_event]
-        db.hmset("#{KEY_EVENT_PREFIX}#{@id}",
-                 :scope, self.scope,
-                 :label, self.label,
-                 :date, self.date.to_time.to_s,
-                 :stats, self.stats.to_json,
-                 :meta, self.meta.to_json,
-                 :options, self.options.to_json)
-        db.sadd "#{self.scope}#{KEY_EVENT_IDS_SUFFIX}", @id
+        @id = self.next_id
+        db.hmset("#{self.scope}#{KEY_EVENT}#{@id}",
+                 "scope", self.scope,
+                 "label", self.label,
+                 "date", self.date.to_time.to_s,
+                 "stats", self.stats.to_json,
+                 "meta", self.meta.to_json,
+                 "options", self.options.to_json)
+        db.sadd "#{self.scope}#{KEY_EVENT_IDS}", @id
       end
       @new = false
       self
@@ -50,15 +50,15 @@ module Redistat
       self.new(*args).save
     end
     
-    def self.next_id
-      db.incr(KEY_NEXT_EVENT_ID)
-    end
-    
-    def self.find(id)
-      event = db.hgetall "#{KEY_EVENT_PREFIX}#{id}"
+    def self.find(scope, id)
+      event = db.hgetall "#{scope}#{KEY_EVENT}#{id}"
       return nil if event.size == 0
       self.new( event["scope"], event["label"], event["date"], JSON.parse(event["stats"]),
-                      JSON.parse(event["meta"]), JSON.parse(event["options"]), false )
+                JSON.parse(event["meta"]), JSON.parse(event["options"]), false )
+    end
+
+    def next_id
+      db.incr("#{self.scope}#{KEY_NEXT_ID}")
     end
     
     def date

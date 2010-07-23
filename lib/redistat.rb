@@ -11,13 +11,14 @@ require "redistat/event"
 require "redistat/key"
 require "redistat/label"
 require "redistat/date"
+require "redistat/scope"
 
 module Redistat
   
-  KEY_NEXT_EVENT_ID = "Redistat.next_event_id"
-  KEY_EVENT_PREFIX = "Redistat.event:"
-  KEY_LEBELS_PREFIX = "Redistat.lables:"
-  KEY_EVENT_IDS_SUFFIX = ".event_ids"
+  KEY_NEXT_ID = ".next_id"
+  KEY_EVENT = ".event:"
+  KEY_LEBELS = "Redistat.lables:"
+  KEY_EVENT_IDS = ".event_ids"
 
   # Provides access to the Redis database. This is shared accross all models and instances.
   def redis

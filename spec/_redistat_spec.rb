@@ -2,6 +2,10 @@ require "spec_helper"
 
 describe Redistat do
   
+  before(:all) do
+    db.flushdb
+  end
+  
   it "should have a valid redis client instance" do
     db.should_not be_nil
   end
