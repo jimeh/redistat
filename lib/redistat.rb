@@ -12,6 +12,7 @@ require "redistat/key"
 require "redistat/label"
 require "redistat/model"
 require "redistat/scope"
+require "redistat/summary"
 
 module Redistat
   
