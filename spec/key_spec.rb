@@ -7,7 +7,7 @@ describe Redistat::Key do
     @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
     @date = Time.now
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour})
   end
   
   it "should initialize properly" do
@@ -19,7 +19,7 @@ describe Redistat::Key do
   end
   
   it "should convert to string properly" do
-    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
+    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:hour)}"
     props = [:year, :month, :day, :hour, :min, :sec]
     props.each do
       @key.to_s(props.last).should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(props.last)}"
@@ -28,10 +28,15 @@ describe Redistat::Key do
   end
   
   it "should abide to hash_label option" do
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => true})
-    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:day)}"
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day, :label_hash => false})
-    @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:day)}"
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :label_hash => true})
+    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:hour)}"
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :label_hash => false})
+    @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:hour)}"
+  end
+  
+  it "should have default depth option" do
+    @key = Redistat::Key.new(@scope, @label, @date)
+    @key.depth.should == :day
   end
   
   it "should allow changing attributes" do

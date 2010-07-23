@@ -9,11 +9,19 @@ module Redistat
       @scope = scope
       self.label = label if !label.nil?
       self.date = date ||= Time.now
-      self.options = options
+      @options = default_options.merge(options ||= {})
+    end
+    
+    def default_options
+      { :depth => :day }
     end
     
     def date=(input)
       @date = (input.instance_of?(Redistat::Date)) ? input : Date.new(input) # Redistat::Date, not ::Date
+    end
+    
+    def depth
+      @options[:depth]
     end
     
     def label
@@ -29,7 +37,7 @@ module Redistat
     end
     
     def to_s(depth = nil)
-      depth ||= @options[:depth] if !@options[:depth].nil?
+      depth ||= @options[:depth]
       key = "#{@scope}"
       key << "/" + ((@options[:label_hash].nil? || @options[:label_hash] == true) ? @label.hash : @label.name) if !label.nil?
       key << ":#{@date.to_s(depth)}"
