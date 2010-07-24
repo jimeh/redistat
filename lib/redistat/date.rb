@@ -9,6 +9,8 @@ module Redistat
     attr_accessor :sec
     attr_accessor :usec
     
+    DEPTHS = [:year, :month, :day, :hour, :min, :sec, :usec]
+    
     def initialize(input)
       if input.is_a?(::Time)
         from_time(input)
@@ -36,7 +38,7 @@ module Redistat
     def to_string(depth = nil)
       depth ||= :sec
       output = ""
-      [:year, :month, :day, :hour, :min, :sec, :usec].each_with_index do |current, i|
+      DEPTHS.each_with_index do |current, i|
         break if self.send(current).nil?
         if current != :usec
           output << self.send(current).to_s.rjust((i <= 0) ? 4 : 2, '0')
@@ -57,7 +59,7 @@ module Redistat
     private
     
     def from_time(input)
-      [:year, :month, :day, :hour, :min, :sec, :usec].each do |k|
+      DEPTHS.each do |k|
         send("#{k}=", input.send(k))
       end
     end

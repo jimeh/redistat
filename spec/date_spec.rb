@@ -5,7 +5,7 @@ describe Redistat::Date do
   it "should initialize from Time object" do
     now = Time.now
     [Redistat::Date.new(now), now.to_rs].each do |rdate|
-      [:year, :month, :day, :hour, :min, :sec, :usec].each { |k| rdate.send(k).should == now.send(k) }
+      Redistat::Date::DEPTHS.each { |k| rdate.send(k).should == now.send(k) }
     end
   end
   
