@@ -2,11 +2,11 @@ require "spec_helper"
 
 describe Redistat do
   
-  before(:all) do
+  before(:each) do
     db.flushdb
   end
   
-  it "should have a valid redis client instance" do
+  it "should have a valid Redis client instance" do
     db.should_not be_nil
   end
   
@@ -16,7 +16,7 @@ describe Redistat do
   end
   
   it "should be able to set and get data" do
-    db.set "hello", "world"
+    db.set("hello", "world")
     db.get("hello").should == "world"
     db.del("hello").should be_true
   end

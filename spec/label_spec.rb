@@ -2,11 +2,8 @@ require "spec_helper"
 
 describe Redistat::Label do
   
-  before(:all) do
-    db.flushdb
-  end
-  
   before(:each) do
+    db.flushdb
     @name = "about_us"
     @label = Redistat::Label.new(@name)
   end

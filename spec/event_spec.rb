@@ -2,11 +2,8 @@ require "spec_helper"
 
 describe Redistat::Event do
   
-  before(:all) do
-    db.flushdb
-  end
-  
   before(:each) do
+    db.flushdb
     @scope = "PageViews"
     @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
