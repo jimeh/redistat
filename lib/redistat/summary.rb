@@ -3,11 +3,13 @@ module Redistat
     include Database
     extend Database
     
+    DEPTHS = [:year, :month, :day, :hour, :min, :sec, :usec]
+    
     def self.update_all(key, stats = {}, depth_limit = nil)
       stats ||= {}
       depth_limit ||= key.depth
       return nil if stats.size == 0
-      depths.each do |depth|
+      DEPTHS.each do |depth|
         update(key, stats, depth)
         break if depth == depth_limit
       end
@@ -19,10 +21,6 @@ module Redistat
       stats.each do |field, value|
         db.hincrby key.to_s(depth), field, value
       end
-    end
-    
-    def self.depths
-      [:year, :month, :day, :hour, :min, :sec, :usec]
     end
     
   end
