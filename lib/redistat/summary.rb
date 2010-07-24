@@ -6,7 +6,7 @@ module Redistat
     def self.update_all(key, stats = {}, depth_limit = nil)
       stats ||= {}
       depth_limit ||= key.depth
-      return false if stats.size == 0
+      return nil if stats.size == 0
       depths.each do |depth|
         update(key, stats, depth)
         break if depth == depth_limit
