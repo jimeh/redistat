@@ -21,6 +21,15 @@ describe Redistat do
     db.del("hello").should be_true
   end
   
+  it "should be able to store hashes to Redis" do
+    db.hset("key", "field", "1")
+    db.hget("key", "field").should == "1"
+    db.hincrby("key", "field", 1)
+    db.hget("key", "field").should == "2"
+    db.hincrby("key", "field", -1)
+    db.hget("key", "field").should == "1"
+  end
+  
   def db
     Redistat.redis
   end
