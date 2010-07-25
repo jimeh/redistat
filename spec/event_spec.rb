@@ -67,7 +67,17 @@ describe Redistat::Event do
     @event.date.to_s.should == fetched.date.to_s
   end
   
-  it "should store summarized statistics"
+  it "should store summarized statistics" do
+    2.times do |i|
+      @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options).save
+      Redistat::Date::DEPTHS.each do |depth|
+        summary = db.hgetall @event.key.to_s(depth)
+        summary.should have_at_least(1).items
+        summary["views"].should == (i+1).to_s
+        break if depth == :hour
+      end
+    end
+  end
   
   def db
     Redistat.redis
