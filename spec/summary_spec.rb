@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Redistat::Label do
+describe Redistat::Summary do
   
   before(:each) do
     db.flushdb
