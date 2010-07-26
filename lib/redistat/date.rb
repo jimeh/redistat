@@ -23,19 +23,19 @@ module Redistat
       end
     end
     
-    def to_time
+    def to_t
       ::Time.local(@year, @month, @day, @hour, @min, @sec, @usec)
     end
     
-    def to_date
+    def to_d
       ::Date.civil(@year, @month, @day)
     end
 
-    def to_integer
+    def to_i
       to_time.to_i
     end
     
-    def to_string(depth = nil)
+    def to_s(depth = nil)
       depth ||= :sec
       output = ""
       DEPTHS.each_with_index do |current, i|
@@ -50,10 +50,10 @@ module Redistat
       output
     end
     
-    alias :to_t :to_time
-    alias :to_d :to_date
-    alias :to_i :to_integer
-    alias :to_s :to_string
+    alias :to_time    :to_t
+    alias :to_date    :to_d
+    alias :to_integer :to_i
+    alias :to_string  :to_s
     
     
     private
