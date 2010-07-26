@@ -64,4 +64,10 @@ describe Redistat::Date do
     end
   end
   
+  it "should add helper methods to Date, Time and Fixnum classes" do
+    Date.today.to_time.should == Time.parse(Date.today.to_s)
+    Time.now.to_i.to_time.should == Time.at(Time.now.to_i)
+    Date.today.to_rs.to_date.should == Date.today
+  end
+  
 end

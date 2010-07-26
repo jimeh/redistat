@@ -82,26 +82,30 @@ module Redistat
     end
     
   end
+  
+  module DateHelper
+    def to_redistat
+      Redistat::Date.new(self)
+    end
+    alias :to_rs :to_redistat    
+  end
 end
 
 
 class Date
-  def to_redistat
-    Redistat::Date.new(self)
+  include Redistat::DateHelper
+  def to_time
+    Time.parse(self.to_s)
   end
-  alias :to_rs :to_redistat
 end
 
 class Time
-  def to_redistat
-    Redistat::Date.new(self)
-  end
-  alias :to_rs :to_redistat
+  include Redistat::DateHelper
 end
 
 class Fixnum
-  def to_redistat
-    Redistat::Date.new(self)
+  include Redistat::DateHelper
+  def to_time
+    Time.at(self)
   end
-  alias :to_rs :to_redistat
 end
