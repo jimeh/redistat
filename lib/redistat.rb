@@ -1,21 +1,25 @@
 
-require "redis"
-require "date"
-require "time"
-require "json/pure"
-require "digest/sha1"
+require 'rubygems'
+require 'active_support'
+require 'redis'
+require 'date'
+require 'time'
+require 'time/ext'
+require 'json'
+require 'digest/sha1'
 
-require "redistat/database"
-require "redistat/date"
-require "redistat/event"
-require "redistat/extensions/date"
-require "redistat/extensions/time"
-require "redistat/extensions/fixnum"
-require "redistat/key"
-require "redistat/label"
-require "redistat/model"
-require "redistat/scope"
-require "redistat/summary"
+require 'redistat/database'
+require 'redistat/date'
+require 'redistat/event'
+require 'redistat/key'
+require 'redistat/label'
+require 'redistat/model'
+require 'redistat/scope'
+require 'redistat/summary'
+
+require 'redistat/core_ext/date'
+require 'redistat/core_ext/time'
+require 'redistat/core_ext/fixnum'
 
 module Redistat
   
@@ -45,7 +49,7 @@ module Redistat
   # @option options [#to_s] :db (0) Database number.
   # @option options [#to_s] :timeout (0) Database timeout in seconds.
   # @example Connect to a database in port 6380.
-  #   Ohm.connect(:port => 6380)
+  #   Redistat.connect(:port => 6380)
   def connect(*options)
     self.redis = nil
     @options = options
