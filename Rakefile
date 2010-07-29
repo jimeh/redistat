@@ -13,7 +13,7 @@ begin
     gem.add_dependency "activesupport", ">= 2.3.0"
     gem.add_dependency "json", ">= 1.0.0"
     gem.add_dependency "redis", ">= 2.0.0"
-    gem.add_dependency "time_ext", ">= 0.1.0"
+    gem.add_dependency "time_ext", ">= 0.2.0"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
