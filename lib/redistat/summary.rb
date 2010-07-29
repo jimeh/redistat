@@ -1,7 +1,6 @@
 module Redistat
   class Summary
     include Database
-    extend Database
     
     def self.update_all(key, stats = {}, depth_limit = nil)
       stats ||= {}

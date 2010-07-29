@@ -1,7 +1,6 @@
 module Redistat
   class Event
     include Database
-    extend Database
     
     attr_reader :id
     attr_reader :key

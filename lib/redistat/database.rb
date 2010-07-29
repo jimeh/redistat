@@ -1,9 +1,9 @@
 module Redistat
   module Database
-    def db
-      Redistat.redis
+    def self.included(base)
+      base.extend(Database)
     end
-    def self.db
+    def db
       Redistat.redis
     end
   end
