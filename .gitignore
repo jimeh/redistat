@@ -21,3 +21,4 @@ pkg
 ## PROJECT::SPECIFIC
 .yardoc/*
 spec/db/*
+doc
