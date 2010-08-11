@@ -26,14 +26,17 @@ module Redistat
     def to_t
       ::Time.local(@year, @month, @day, @hour, @min, @sec, @usec)
     end
+    alias :to_time :to_t
     
     def to_d
       ::Date.civil(@year, @month, @day)
     end
+    alias :to_date :to_d
 
     def to_i
       to_time.to_i
     end
+    alias :to_integer :to_i
     
     def to_s(depth = nil)
       depth ||= :sec
@@ -49,12 +52,7 @@ module Redistat
       end
       output
     end
-    
-    alias :to_time    :to_t
-    alias :to_date    :to_d
-    alias :to_integer :to_i
-    alias :to_string  :to_s
-    
+    alias :to_string :to_s
     
     private
     

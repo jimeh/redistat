@@ -1,6 +1,7 @@
 require "spec_helper"
 
 describe Redistat::Summary do
+  include Redistat::Database
   
   before(:each) do
     db.flushdb
@@ -45,10 +46,27 @@ describe Redistat::Summary do
     end
   end
   
-  it "should fetch summary collections for date ranges"
-  
-  def db
-    Redistat.redis
-  end
-  
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
