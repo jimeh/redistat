@@ -1,6 +1,7 @@
 require "spec_helper"
 
 describe Redistat::Label do
+  include Redistat::Database
   
   before(:each) do
     db.flushdb
@@ -22,10 +23,6 @@ describe Redistat::Label do
     @label = Redistat::Label.create(@name)
     @label.saved?.should be_true
     db.get("#{Redistat::KEY_LEBELS}#{@label.hash}").should == @name
-  end
-  
-  def db
-    Redistat.redis
   end
   
 end
