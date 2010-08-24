@@ -16,6 +16,13 @@ module Redistat
       { :depth => :day }
     end
     
+    def prefix
+      key = "#{@scope}"
+      key << "/" + ((@options[:label_hash].nil? || @options[:label_hash] == true) ? @label.hash : @label.name) if !label.nil?
+      key << ":"
+      key
+    end
+    
     def date=(input)
       @date = (input.instance_of?(Redistat::Date)) ? input : Date.new(input) # Redistat::Date, not ::Date
     end
@@ -38,9 +45,9 @@ module Redistat
     
     def to_s(depth = nil)
       depth ||= @options[:depth]
-      key = "#{@scope}"
-      key << "/" + ((@options[:label_hash].nil? || @options[:label_hash] == true) ? @label.hash : @label.name) if !label.nil?
-      key << ":#{@date.to_s(depth)}"
+      key = self.prefix
+      key << @date.to_s(depth)
+      key
     end
     
   end
