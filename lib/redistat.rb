@@ -1,6 +1,7 @@
 
 require 'rubygems'
 require 'active_support'
+require 'active_support/time' if !Time.respond_to?(:days_in_month) # Active Support 2.x and 3.x
 require 'redis'
 require 'date'
 require 'time'
