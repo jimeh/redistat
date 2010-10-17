@@ -27,7 +27,7 @@ module Redistat
           sets = [find_start_keys_for(d, start_date, end_date, (i == 0))]
           sets << find_end_keys_for(d, start_date, end_date, (i == 0))
           sets.each do |set|
-            self << set if set != { :add => [], :sub => [] }
+            self << set if set != { :add => [], :rem => [] }
           end
         end
         self
@@ -35,7 +35,7 @@ module Redistat
 
       def find_date_sets_by_interval(start_date, end_date, depth, inclusive = true)
         depth ||= :hour
-        self << { :add => start_date.map_beginning_of_each(depth, :include_start => inclusive, :include_end => inclusive).until(end_date) { |t| t.to_rs.to_s(depth) }, :sub => [] }
+        self << { :add => start_date.map_beginning_of_each(depth, :include_start => inclusive, :include_end => inclusive).until(end_date) { |t| t.to_rs.to_s(depth) }, :rem => [] }
       end
 
       def find_start_keys_for(unit, start_date, end_date, lowest_depth = false)
@@ -47,10 +47,10 @@ module Redistat
           start_date.beginning_of_each(unit, :include_start => lowest_depth).until(start_date.end_of(nunit)) do |t|
             add << t.to_rs.to_s(unit) if t < end_date.beginning_of(unit)
           end
-          { :add => add, :sub => [] }
+          { :add => add, :rem => [] }
         else
           { :add => [start_date.beginning_of(nunit).to_rs.to_s(nunit)],
-            :sub => start_date.beginning_of(nunit).map_beginning_of_each(unit, :include_start => true, :include_end => !lowest_depth).until(start_date) { |t| t.to_rs.to_s(unit) } }
+            :rem => start_date.beginning_of(nunit).map_beginning_of_each(unit, :include_start => true, :include_end => !lowest_depth).until(start_date) { |t| t.to_rs.to_s(unit) } }
         end
       end
 
@@ -65,28 +65,28 @@ module Redistat
           end_date.beginning_of(nunit).beginning_of_each(unit, :include_start => true, :include_end => lowest_depth).until(end_date) do |t|
             add << t.to_rs.to_s(unit) if t > start_date.beginning_of(unit)
           end
-          { :add => add, :sub => [] }
+          { :add => add, :rem => [] }
         elsif has_nunit
           { :add => [end_date.beginning_of(nunit).to_rs.to_s(nunit)], 
-            :sub => end_date.map_beginning_of_each(unit, :include_start => !lowest_depth).until(end_date.end_of(nunit)) { |t| t.to_rs.to_s(unit) } }
+            :rem => end_date.map_beginning_of_each(unit, :include_start => !lowest_depth).until(end_date.end_of(nunit)) { |t| t.to_rs.to_s(unit) } }
         else
-          { :add => [], :sub => [] }
+          { :add => [], :rem => [] }
         end
       end
 
       def find_start_year_for(start_date, end_date, lowest_depth = false)
         if start_date.years_since(1).beginning_of_year < end_date.beginning_of_year
-          { :add => start_date.map_beginning_of_each_year(:include_end => lowest_depth).until(end_date) { |t| t.to_rs.to_s(:year) }, :sub => [] }
+          { :add => start_date.map_beginning_of_each_year(:include_end => lowest_depth).until(end_date) { |t| t.to_rs.to_s(:year) }, :rem => [] }
         else
-          { :add => [], :sub => [] }
+          { :add => [], :rem => [] }
         end
       end
 
       def find_end_year_for(start_date, end_date, lowest_depth = false)
         if lowest_depth
-          { :add => [end_date.beginning_of_year.to_rs.to_s(:year)], :sub => [] }
+          { :add => [end_date.beginning_of_year.to_rs.to_s(:year)], :rem => [] }
         else
-          { :add => [], :sub => [] }
+          { :add => [], :rem => [] }
         end
       end
       

@@ -11,13 +11,13 @@ describe Redistat::Finder::DateSet do
     t_end = Time.utc(2013, 12, 4, 22, 52, 3)
     result = Redistat::Finder::DateSet.new(t_start, t_end)
     result.should == [
-      { :add => ["2010082822", "2010082823"],             :sub => []             },
-      { :add => ["20131204"],                             :sub => ["2013120423"] },
-      { :add => ["20100829", "20100830", "20100831"],     :sub => []             },
-      { :add => ["20131201", "20131202", "20131203"],     :sub => []             },
-      { :add => ["201009", "201010", "201011", "201012"], :sub => []             },
-      { :add => ["2013"],                                 :sub => ["201312"]     },
-      { :add => ["2011", "2012"],                         :sub => []             }
+      { :add => ["2010082822", "2010082823"],             :rem => []             },
+      { :add => ["20131204"],                             :rem => ["2013120423"] },
+      { :add => ["20100829", "20100830", "20100831"],     :rem => []             },
+      { :add => ["20131201", "20131202", "20131203"],     :rem => []             },
+      { :add => ["201009", "201010", "201011", "201012"], :rem => []             },
+      { :add => ["2013"],                                 :rem => ["201312"]     },
+      { :add => ["2011", "2012"],                         :rem => []             }
     ]
   end
   
@@ -27,12 +27,12 @@ describe Redistat::Finder::DateSet do
     t_end = t_start + 4.hours
     result = Redistat::Finder::DateSet.new.find_date_sets(t_start, t_end, :hour, true)
     result[0][:add].should == ["2010082818", "2010082819", "2010082820", "2010082821", "2010082822"]
-    result[0][:sub].should == []
+    result[0][:rem].should == []
     
     t_end = t_start + 4.days
     result = Redistat::Finder::DateSet.new.find_date_sets(t_start, t_end, :day, true)
     result[0][:add].should == ["20100828", "20100829", "20100830", "20100831", "20100901"]
-    result[0][:sub].should == []
+    result[0][:rem].should == []
   end
   
   it "should find start keys properly" do
@@ -47,27 +47,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end)
     result[:add].should == ["20100826225458", "20100826225459"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262255", "201008262256", "201008262257", "201008262258", "201008262259"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010082623"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100827", "20100828", "20100829", "20100830", "20100831"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end)
     result[:add].should == ["201009", "201010", "201011", "201012"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :year, t_start, t_end)
     result[:add].should == ["2011", "2012"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     #
     # Reverse / Inteligent fetching
@@ -79,27 +79,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end)
     result[:add].should == ["201004040506"]
-    result[:sub].should == ["20100404050600", "20100404050601", "20100404050602", "20100404050603", "20100404050604"]
+    result[:rem].should == ["20100404050600", "20100404050601", "20100404050602", "20100404050603", "20100404050604"]
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010040405"]
-    result[:sub].should == ["201004040500", "201004040501", "201004040502", "201004040503", "201004040504", "201004040505", "201004040506"]
+    result[:rem].should == ["201004040500", "201004040501", "201004040502", "201004040503", "201004040504", "201004040505", "201004040506"]
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20100404"]
-    result[:sub].should == ["2010040400", "2010040401", "2010040402", "2010040403", "2010040404", "2010040405"]
+    result[:rem].should == ["2010040400", "2010040401", "2010040402", "2010040403", "2010040404", "2010040405"]
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["201004"]
-    result[:sub].should == ["20100401", "20100402", "20100403", "20100404"]
+    result[:rem].should == ["20100401", "20100402", "20100403", "20100404"]
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end)
     result[:add].should == ["2010"]
-    result[:sub].should == ["201001", "201002", "201003", "201004"]
+    result[:rem].should == ["201001", "201002", "201003", "201004"]
     
     result = @finder.send(:find_start_keys_for, :year, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
   end
   
@@ -115,27 +115,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end)
     result[:add].should == ["20100507050600", "20100507050601", "20100507050602"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["201005070500", "201005070501", "201005070502", "201005070503", "201005070504", "201005070505"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010050700", "2010050701", "2010050702", "2010050703", "2010050704"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100501", "20100502", "20100503", "20100504", "20100505", "20100506"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end)
     result[:add].should == ["201001", "201002", "201003", "201004"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :year, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     #
     # Reverse / Inteligent fetching
@@ -147,27 +147,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end)
     result[:add].should == ["201010272256"]
-    result[:sub].should == ["20101027225657", "20101027225658", "20101027225659"]
+    result[:rem].should == ["20101027225657", "20101027225658", "20101027225659"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010102722"]
-    result[:sub].should == ["201010272256", "201010272257", "201010272258", "201010272259"]
+    result[:rem].should == ["201010272256", "201010272257", "201010272258", "201010272259"]
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20101027"]
-    result[:sub].should == ["2010102722", "2010102723"]
+    result[:rem].should == ["2010102722", "2010102723"]
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == ["201010"]
-    result[:sub].should == ["20101027", "20101028", "20101029", "20101030", "20101031"]
+    result[:rem].should == ["20101027", "20101028", "20101029", "20101030", "20101031"]
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end)
     result[:add].should == ["2010"]
-    result[:sub].should == ["201010", "201011", "201012"]
+    result[:rem].should == ["201010", "201011", "201012"]
     
     result = @finder.send(:find_end_keys_for, :year, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
   end
   
@@ -183,22 +183,22 @@ describe Redistat::Finder::DateSet do
     
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end)
     result[:add].should == ["20100826205446", "20100826205447", "20100826205448"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     t_start = Time.utc(2010, 8, 26, 20, 54, 4)
     t_end = t_start + 4.seconds
     
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end)
     result[:add].should == ["20100826205405", "20100826205406", "20100826205407"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     # minutes
     t_start = Time.utc(2010, 8, 26, 20, 54)
@@ -206,22 +206,22 @@ describe Redistat::Finder::DateSet do
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262055", "201008262056", "201008262057"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     t_start = Time.utc(2010, 8, 26, 20, 4)
     t_end = t_start + 4.minutes
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262005", "201008262006", "201008262007"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     # hours
     t_start = Time.utc(2010, 8, 26, 20, 54)
@@ -229,38 +229,38 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262055", "201008262056", "201008262057", "201008262058", "201008262059"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010082621"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010082622"]
-    result[:sub].should == ["201008262254", "201008262255", "201008262256", "201008262257", "201008262258", "201008262259"]
+    result[:rem].should == ["201008262254", "201008262255", "201008262256", "201008262257", "201008262258", "201008262259"]
     
     t_start = Time.utc(2010, 8, 26, 4, 54)
     t_end = t_start + 5.hours
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008260455", "201008260456", "201008260457", "201008260458", "201008260459"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010082605", "2010082606", "2010082607", "2010082608"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010082609"]
-    result[:sub].should == ["201008260954", "201008260955", "201008260956", "201008260957", "201008260958", "201008260959"]
+    result[:rem].should == ["201008260954", "201008260955", "201008260956", "201008260957", "201008260958", "201008260959"]
     
     # days
     t_start = Time.utc(2010, 8, 26, 20, 54)
@@ -268,54 +268,54 @@ describe Redistat::Finder::DateSet do
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262055", "201008262056", "201008262057", "201008262058", "201008262059"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010082621", "2010082622", "2010082623"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100827"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20100828"]
-    result[:sub].should == ["2010082820", "2010082821", "2010082822", "2010082823"]
+    result[:rem].should == ["2010082820", "2010082821", "2010082822", "2010082823"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010082820"]
-    result[:sub].should == ["201008282054", "201008282055", "201008282056", "201008282057", "201008282058", "201008282059"]
+    result[:rem].should == ["201008282054", "201008282055", "201008282056", "201008282057", "201008282058", "201008282059"]
     
     t_start = Time.utc(2010, 8, 6, 20, 54)
     t_end = t_start + 2.day
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008062055", "201008062056", "201008062057", "201008062058", "201008062059"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010080621", "2010080622", "2010080623"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100807"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20100808"]
-    result[:sub].should == ["2010080820", "2010080821", "2010080822", "2010080823"]
+    result[:rem].should == ["2010080820", "2010080821", "2010080822", "2010080823"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010080820"]
-    result[:sub].should == ["201008082054", "201008082055", "201008082056", "201008082057", "201008082058", "201008082059"]
+    result[:rem].should == ["201008082054", "201008082055", "201008082056", "201008082057", "201008082058", "201008082059"]
     
     # months
     t_start = Time.utc(2010, 8, 26, 20, 54)
@@ -323,70 +323,70 @@ describe Redistat::Finder::DateSet do
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201008262055", "201008262056", "201008262057", "201008262058", "201008262059"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010082621", "2010082622", "2010082623"]
-    result[:sub].should == []
+    result[:rem].should == []
         
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100827", "20100828", "20100829", "20100830", "20100831"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end)
     result[:add].should == ["201009", "201010"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == ["201011"]
-    result[:sub].should == ["20101126", "20101127", "20101128", "20101129", "20101130"]
+    result[:rem].should == ["20101126", "20101127", "20101128", "20101129", "20101130"]
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20101126"]
-    result[:sub].should == ["2010112620", "2010112621", "2010112622", "2010112623"]
+    result[:rem].should == ["2010112620", "2010112621", "2010112622", "2010112623"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010112620"]
-    result[:sub].should == ["201011262054", "201011262055", "201011262056", "201011262057", "201011262058", "201011262059"]
+    result[:rem].should == ["201011262054", "201011262055", "201011262056", "201011262057", "201011262058", "201011262059"]
     
     t_start = Time.utc(2010, 4, 26, 20, 54)
     t_end = t_start + 3.months
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end)
     result[:add].should == ["201004262055", "201004262056", "201004262057", "201004262058", "201004262059"]
-    result[:sub].should == []
+    result[:rem].should == []
         
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end)
     result[:add].should == ["2010042621", "2010042622", "2010042623"]
-    result[:sub].should == []
+    result[:rem].should == []
         
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end)
     result[:add].should == ["20100427", "20100428", "20100429", "20100430"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end)
     result[:add].should == ["201005", "201006"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end)
     result[:add].should == []
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end)
     result[:add].should == ["201007"]
-    result[:sub].should == ["20100726", "20100727", "20100728", "20100729", "20100730", "20100731"]
+    result[:rem].should == ["20100726", "20100727", "20100728", "20100729", "20100730", "20100731"]
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end)
     result[:add].should == ["20100726"]
-    result[:sub].should == ["2010072620", "2010072621", "2010072622", "2010072623"]
+    result[:rem].should == ["2010072620", "2010072621", "2010072622", "2010072623"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end)
     result[:add].should == ["2010072620"]
-    result[:sub].should == ["201007262054", "201007262055", "201007262056", "201007262057", "201007262058", "201007262059"]
+    result[:rem].should == ["201007262054", "201007262055", "201007262056", "201007262057", "201007262058", "201007262059"]
     
   end
   
@@ -402,27 +402,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end, true)
     result[:add].should == ["20100826225457", "20100826225458", "20100826225459"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end, true)
     result[:add].should == ["201008262254", "201008262255", "201008262256", "201008262257", "201008262258", "201008262259"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end, true)
     result[:add].should == ["2010082622", "2010082623"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end, true)
     result[:add].should == ["20100826", "20100827", "20100828", "20100829", "20100830", "20100831"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end, true)
     result[:add].should == ["201008", "201009", "201010", "201011", "201012"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_start_keys_for, :year, t_start, t_end, true)
     result[:add].should == ["2011", "2012", "2013"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     #
     # Reverse / Inteligent start fetching
@@ -434,27 +434,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_start_keys_for, :sec, t_start, t_end, true)
     result[:add].should == ["201004040506"]
-    result[:sub].should == ["20100404050600", "20100404050601", "20100404050602", "20100404050603"]
+    result[:rem].should == ["20100404050600", "20100404050601", "20100404050602", "20100404050603"]
     
     result = @finder.send(:find_start_keys_for, :min, t_start, t_end, true)
     result[:add].should == ["2010040405"]
-    result[:sub].should == ["201004040500", "201004040501", "201004040502", "201004040503", "201004040504", "201004040505"]
+    result[:rem].should == ["201004040500", "201004040501", "201004040502", "201004040503", "201004040504", "201004040505"]
     
     result = @finder.send(:find_start_keys_for, :hour, t_start, t_end, true)
     result[:add].should == ["20100404"]
-    result[:sub].should == ["2010040400", "2010040401", "2010040402", "2010040403", "2010040404"]
+    result[:rem].should == ["2010040400", "2010040401", "2010040402", "2010040403", "2010040404"]
     
     result = @finder.send(:find_start_keys_for, :day, t_start, t_end, true)
     result[:add].should == ["201004"]
-    result[:sub].should == ["20100401", "20100402", "20100403"]
+    result[:rem].should == ["20100401", "20100402", "20100403"]
     
     result = @finder.send(:find_start_keys_for, :month, t_start, t_end, true)
     result[:add].should == ["2010"]
-    result[:sub].should == ["201001", "201002", "201003"]
+    result[:rem].should == ["201001", "201002", "201003"]
     
     result = @finder.send(:find_start_keys_for, :year, t_start, t_end, true)
     result[:add].should == ["2011", "2012", "2013"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     #
     # Simple fetching
@@ -466,27 +466,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end, true)
     result[:add].should == ["20100507050600", "20100507050601", "20100507050602", "20100507050603"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end, true)
     result[:add].should == ["201005070500", "201005070501", "201005070502", "201005070503", "201005070504", "201005070505", "201005070506"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end, true)
     result[:add].should == ["2010050700", "2010050701", "2010050702", "2010050703", "2010050704", "2010050705"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end, true)
     result[:add].should == ["20100501", "20100502", "20100503", "20100504", "20100505", "20100506", "20100507"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end, true)
     result[:add].should == ["201001", "201002", "201003", "201004", "201005"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     result = @finder.send(:find_end_keys_for, :year, t_start, t_end, true)
     result[:add].should == ["2010"]
-    result[:sub].should == []
+    result[:rem].should == []
     
     #
     # Reverse / Inteligent fetching
@@ -498,27 +498,27 @@ describe Redistat::Finder::DateSet do
   
     result = @finder.send(:find_end_keys_for, :sec, t_start, t_end, true)
     result[:add].should == ["201010272256"]
-    result[:sub].should == ["20101027225658", "20101027225659"]
+    result[:rem].should == ["20101027225658", "20101027225659"]
     
     result = @finder.send(:find_end_keys_for, :min, t_start, t_end, true)
     result[:add].should == ["2010102722"]
-    result[:sub].should == ["201010272257", "201010272258", "201010272259"]
+    result[:rem].should == ["201010272257", "201010272258", "201010272259"]
     
     result = @finder.send(:find_end_keys_for, :hour, t_start, t_end, true)
     result[:add].should == ["20101027"]
-    result[:sub].should == ["2010102723"]
+    result[:rem].should == ["2010102723"]
     
     result = @finder.send(:find_end_keys_for, :day, t_start, t_end, true)
     result[:add].should == ["201010"]
-    result[:sub].should == ["20101028", "20101029", "20101030", "20101031"]
+    result[:rem].should == ["20101028", "20101029", "20101030", "20101031"]
     
     result = @finder.send(:find_end_keys_for, :month, t_start, t_end, true)
     result[:add].should == ["2010"]
-    result[:sub].should == ["201011", "201012"]
+    result[:rem].should == ["201011", "201012"]
     
     result = @finder.send(:find_end_keys_for, :year, t_start, t_end, true)
     result[:add].should == ["2010"]
-    result[:sub].should == []
+    result[:rem].should == []
     
   end
   
