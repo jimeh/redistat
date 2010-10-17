@@ -5,6 +5,11 @@ describe Redistat::Finder do
   
   before(:each) do
     db.flushdb
+    @scope = "PageViews"
+    @label = "about_us"
+    @date = Time.now
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
+    @stats = {"views" => 3, "visitors" => 2}
   end
   
   it "should initialize properly" do
@@ -41,12 +46,6 @@ describe Redistat::Finder do
   it "should fetch stats properly" do
     # pending "needs reimplementation"
     
-    @scope = "PageViews"
-    @label = "about_us"
-    @date = Time.now
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
-    @stats = {"views" => 3, "visitors" => 2}
-    
     key = Redistat::Key.new(@scope, @label, 2.hours.ago)
     Redistat::Summary.update(key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, 1.hours.ago)
@@ -54,10 +53,14 @@ describe Redistat::Finder do
     key = Redistat::Key.new(@scope, @label, 24.minutes.ago)
     Redistat::Summary.update(key, @stats, :hour)
     
-    # stats = Redistat::Summary.find(key, 3.hours.ago, 2.hour.from_now, :hour)
     stats = Redistat::Finder.find({:from => 3.hours.ago, :till => 2.hours.from_now, :scope => @scope, :label => @label, :depth => :hour})
     stats.should == { "views" => 9, "visitors" => 6 }
     
+  end
+  
+  it "should return empty hash when attempting to fetch non-existent results" do
+    stats = Redistat::Finder.find({:from => 3.hours.ago, :till => 2.hours.from_now, :scope => @scope, :label => @label, :depth => :hour})
+    stats.should == {}
   end
   
 end

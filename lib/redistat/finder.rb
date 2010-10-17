@@ -18,44 +18,31 @@ module Redistat
       return nil if !valid_options?
       sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
       key = Key.new(@options[:scope], @options[:label])
-      sum = {}
+      total_sum = Hash.new
       sets.each do |set|
-        set_sum = summarize_add_keys(set[:add], key, {})
-        set_sum = summarize_sub_keys(set[:sub], key, set_sum)
-        set_sum.each do |k, v|
-          if sum.has_key?(k)
-            sum[k] += v.to_i
-          else
-            sum[k] = v.to_i
-          end
+        sum = Hash.new
+        sum = summarize_add_keys(set[:add], key, sum)
+        sum = summarize_rem_keys(set[:rem], key, sum)
+        sum.each do |k, v|
+          total_sum.set_or_incr(k, v.to_i)
+        end
+      end
+      total_sum
+    end
+    
+    def summarize_add_keys(sets, key, sum)
+      sets.each do |date|
+        db.hgetall("#{key.prefix}#{date}").each do |k, v|
+          sum.set_or_incr(k, v.to_i)
         end
       end
       sum
     end
     
-    def summarize_add_keys(the_sets, key, sum)
-      the_sets.each do |date|
-        stat = db.hgetall("#{key.prefix}#{date}")
-        stat.each do |k, v|
-          if sum.has_key?(k)
-            sum[k] += v.to_i
-          else
-            sum[k] = v.to_i
-          end
-        end
-      end
-      sum
-    end
-    
-    def summarize_sub_keys(the_sets, key, sum)
-      the_sets.each do |date|
-        stat = db.hgetall("#{key.prefix}#{date}")
-        stat.each do |k, v|
-          if sum.has_key?(k)
-            sum[k] -= v.to_i
-          else
-            sum[k] = -v.to_i
-          end
+    def summarize_rem_keys(sets, key, sum)
+      sets.each do |date|
+        db.hgetall("#{key.prefix}#{date}").each do |k, v|
+          sum.set_or_incr(k, -v.to_i)
         end
       end
       sum
