@@ -8,10 +8,12 @@ module Redistat
     attr_accessor :min
     attr_accessor :sec
     attr_accessor :usec
+    attr_accessor :depth
     
     DEPTHS = [:year, :month, :day, :hour, :min, :sec, :usec]
     
-    def initialize(input)
+    def initialize(input, depth = nil)
+      @depth = depth
       if input.is_a?(::Time)
         from_time(input)
       elsif input.is_a?(::Date)
@@ -39,7 +41,7 @@ module Redistat
     alias :to_integer :to_i
     
     def to_s(depth = nil)
-      depth ||= :sec
+      depth ||= @depth ||= :sec
       output = ""
       DEPTHS.each_with_index do |current, i|
         break if self.send(current).nil?
@@ -82,8 +84,8 @@ module Redistat
   end
   
   module DateHelper
-    def to_redistat
-      Redistat::Date.new(self)
+    def to_redistat(depth = nil)
+      Redistat::Date.new(self, depth)
     end
     alias :to_rs :to_redistat
   end

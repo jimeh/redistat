@@ -70,4 +70,18 @@ describe Redistat::Date do
     Date.today.to_rs.to_date.should == Date.today
   end
   
+  it "should have a depth property" do
+    now = Time.now
+    
+    date = Redistat::Date.new(now)
+    date.depth.should be_nil
+    date.to_s.should == now.to_rs(:sec).to_s
+    date.to_s.should == now.to_rs.to_s(:sec)
+    
+    date = Redistat::Date.new(now, :hour)
+    date.depth.should == :hour
+    date.to_s.should == now.to_rs(:hour).to_s
+    date.to_s.should == now.to_rs.to_s(:hour)
+  end
+  
 end
