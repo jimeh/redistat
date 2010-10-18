@@ -44,8 +44,6 @@ describe Redistat::Finder do
   end
   
   it "should fetch stats properly" do
-    # pending "needs reimplementation"
-    
     key = Redistat::Key.new(@scope, @label, 2.hours.ago)
     Redistat::Summary.update(key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, 1.hours.ago)
@@ -53,9 +51,14 @@ describe Redistat::Finder do
     key = Redistat::Key.new(@scope, @label, 24.minutes.ago)
     Redistat::Summary.update(key, @stats, :hour)
     
-    stats = Redistat::Finder.find({:from => 3.hours.ago, :till => 2.hours.from_now, :scope => @scope, :label => @label, :depth => :hour})
-    stats.should == { "views" => 9, "visitors" => 6 }
+    three_hours_ago = 3.hours.ago
+    two_hours_from_now = 2.hours.from_now
+    depth = :hour
     
+    stats = Redistat::Finder.find({:from => three_hours_ago, :till => two_hours_from_now, :scope => @scope, :label => @label, :depth => depth})
+    stats.should == { "views" => 9, "visitors" => 6 }
+    stats.date.to_s.should == three_hours_ago.to_rs.to_s(depth)
+    stats.till.to_s.should == two_hours_from_now.to_rs.to_s(depth)
   end
   
   it "should return empty hash when attempting to fetch non-existent results" do
@@ -63,4 +66,17 @@ describe Redistat::Finder do
     stats.should == {}
   end
   
+  it "should fetch data per unit when interval option is specified" do
+    
+  end
+  
 end
+
+
+
+
+
+
+
+
+

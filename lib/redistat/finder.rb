@@ -27,6 +27,8 @@ module Redistat
           total_sum.set_or_incr(k, v.to_i)
         end
       end
+      total_sum.date = Date.new(@options[:from], @options[:depth])
+      total_sum.till = Date.new(@options[:till], @options[:depth])
       total_sum
     end
     
