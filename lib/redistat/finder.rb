@@ -18,9 +18,9 @@ module Redistat
       return nil if !valid_options?
       sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
       key = Key.new(@options[:scope], @options[:label])
-      total_sum = Hash.new
+      total_sum = Result.new
       sets.each do |set|
-        sum = Hash.new
+        sum = Result.new
         sum = summarize_add_keys(set[:add], key, sum)
         sum = summarize_rem_keys(set[:rem], key, sum)
         sum.each do |k, v|
