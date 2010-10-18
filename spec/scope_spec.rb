@@ -1,6 +1,7 @@
 require "spec_helper"
 
 describe Redistat::Scope do
+  include Redistat::Database
   
   before(:all) do
     db.flushdb
@@ -21,10 +22,6 @@ describe Redistat::Scope do
     scope.next_id.should == 1
     @scope.next_id.should == 2
     scope.next_id.should == 2
-  end
-  
-  def db
-    Redistat.redis
   end
   
 end

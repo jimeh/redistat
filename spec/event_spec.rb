@@ -1,6 +1,7 @@
 require "spec_helper"
 
 describe Redistat::Event do
+  include Redistat::Database
   
   before(:each) do
     db.flushdb
@@ -77,10 +78,6 @@ describe Redistat::Event do
         break if depth == :hour
       end
     end
-  end
-  
-  def db
-    Redistat.redis
   end
   
 end
