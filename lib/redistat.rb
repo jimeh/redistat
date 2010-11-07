@@ -9,6 +9,7 @@ require 'time/ext'
 require 'json'
 require 'digest/sha1'
 
+require 'redistat/collection'
 require 'redistat/database'
 require 'redistat/date'
 require 'redistat/event'
