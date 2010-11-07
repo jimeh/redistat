@@ -44,12 +44,7 @@ describe Redistat::Finder do
   end
   
   it "should fetch stats properly" do
-    key = Redistat::Key.new(@scope, @label, 2.hours.ago)
-    Redistat::Summary.update(key, @stats, :hour)
-    key = Redistat::Key.new(@scope, @label, 1.hours.ago)
-    Redistat::Summary.update(key, @stats, :hour)
-    key = Redistat::Key.new(@scope, @label, 24.minutes.ago)
-    Redistat::Summary.update(key, @stats, :hour)
+    create_example_stats
     
     three_hours_ago = 3.hours.ago
     two_hours_from_now = 2.hours.from_now
@@ -67,7 +62,34 @@ describe Redistat::Finder do
   end
   
   it "should fetch data per unit when interval option is specified" do
+    create_example_stats
     
+    three_hours_ago = 3.hours.ago
+    two_hours_from_now = 2.hours.from_now
+    depth = :hour
+    
+    stats = Redistat::Finder.find(:from => 3.hours.ago, :till => 2.hours.ago, :scope => @scope, :label => @label, :depth => :hour, :interval => :hour)
+    puts "\n>>>>>> stats: " + stats.inspect + "\n"
+  end
+  
+  it "should throw error on invalid options" do
+    begin
+      stats = Redistat::Finder.find(:from => 3.hours.ago)
+    rescue ArgumentError => e
+      e.class.to_s.should == "Redistat::InvalidOptions"
+    end
+  end
+  
+  
+  # helper methods
+  
+  def create_example_stats
+    key = Redistat::Key.new(@scope, @label, 2.hours.ago)
+    Redistat::Summary.update(key, @stats, :hour)
+    key = Redistat::Key.new(@scope, @label, 1.hours.ago)
+    Redistat::Summary.update(key, @stats, :hour)
+    key = Redistat::Key.new(@scope, @label, 24.minutes.ago)
+    Redistat::Summary.update(key, @stats, :hour)
   end
   
 end

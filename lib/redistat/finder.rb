@@ -15,11 +15,28 @@ module Redistat
     
     def find(options = {})
       @options.merge!(options)
-      return nil if !valid_options?
-      sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
+      raise InvalidOptions.new if !valid_options?
+      if @options[:interval].nil? || !@options[:interval]
+        find_by_magic
+      else
+        find_by_interval
+      end
+    end
+    
+    def find_by_interval(options = {})
+      @options.merge!(options)
+      raise InvalidOptions.new if !valid_options?
+      date_sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
+      
+    end
+    
+    def find_by_magic(options = {})
+      @options.merge!(options)
+      raise InvalidOptions.new if !valid_options?
+      date_sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
       key = Key.new(@options[:scope], @options[:label])
       total_sum = Result.new
-      sets.each do |set|
+      date_sets.each do |set|
         sum = Result.new
         sum = summarize_add_keys(set[:add], key, sum)
         sum = summarize_rem_keys(set[:rem], key, sum)

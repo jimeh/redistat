@@ -31,6 +31,8 @@ module Redistat
   KEY_EVENT = ".event:"
   KEY_LEBELS = "Redistat.lables:"
   KEY_EVENT_IDS = ".event_ids"
+  
+  class InvalidOptions < ArgumentError; end
 
   # Provides access to the Redis database. This is shared accross all models and instances.
   def redis
