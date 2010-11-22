@@ -39,21 +39,21 @@ describe Redistat::Model do
     stats.first.should == stats.total
     
     stats = ModelHelper.fetch("sheep.black", 5.hours.ago, 1.hour.from_now)
-    stats.total["count"].should == 8
-    stats.total["weight"].should == 617
+    stats.total[:count].should == 8
+    stats.total[:weight].should == 617
     stats.first.should == stats.total
     
     ModelHelper.store("sheep.white", {:count => 5, :weight => 393}, 4.hours.ago)
     ModelHelper.store("sheep.white", {:count => 4, :weight => 316})
     
     stats = ModelHelper.fetch("sheep.white", 2.hours.ago, 1.hour.from_now)
-    stats.total["count"].should == 4
-    stats.total["weight"].should == 316
+    stats.total[:count].should == 4
+    stats.total[:weight].should == 316
     stats.first.should == stats.total
     
     stats = ModelHelper.fetch("sheep.white", 5.hours.ago, 1.hour.from_now)
-    stats.total["count"].should == 9
-    stats.total["weight"].should == 709
+    stats.total[:count].should == 9
+    stats.total[:weight].should == 709
     stats.first.should == stats.total
   end
   

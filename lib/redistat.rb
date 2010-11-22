@@ -1,6 +1,7 @@
 
 require 'rubygems'
 require 'active_support'
+require 'active_support/hash_with_indifferent_access' if !Hash.respond_to?(:with_indifferent_access) # Active Support 2.x and 3.x
 require 'redis'
 require 'date'
 require 'time'
