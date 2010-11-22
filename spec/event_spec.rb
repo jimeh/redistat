@@ -12,7 +12,7 @@ describe Redistat::Event do
     @meta = {:user_id => 239}
     @options = {:depth => :hour}
     @date = Time.now
-    @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options)
+    @event = Redistat::Event.new(@scope, @label, @date, @stats, @options, @meta)
   end
   
   it "should initialize properly" do
@@ -43,7 +43,7 @@ describe Redistat::Event do
   end
   
   it "should increment next_id" do
-    event = Redistat::Event.new("VisitorCount", @label, @date, @stats, @meta, @options)
+    event = Redistat::Event.new("VisitorCount", @label, @date, @stats, @options, @meta)
     @event.next_id.should == 1
     event.next_id.should == 1
     @event.next_id.should == 2
@@ -51,7 +51,7 @@ describe Redistat::Event do
   end
   
   it "should store event properly" do
-    @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options.merge({:store_event => true}))
+    @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta)
     @event.new?.should be_true
     @event.save
     @event.new?.should be_false
@@ -61,7 +61,7 @@ describe Redistat::Event do
   end
   
   it "should find event by id" do
-    @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options.merge({:store_event => true})).save
+    @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta).save
     fetched = Redistat::Event.find(@scope, @event.id)
     @event.scope.should == fetched.scope
     @event.label.should == fetched.label
@@ -70,7 +70,7 @@ describe Redistat::Event do
   
   it "should store summarized statistics" do
     2.times do |i|
-      @event = Redistat::Event.new(@scope, @label, @date, @stats, @meta, @options).save
+      @event = Redistat::Event.new(@scope, @label, @date, @stats, @options, @meta).save
       Redistat::Date::DEPTHS.each do |depth|
         summary = db.hgetall @event.key.to_s(depth)
         summary.should have_at_least(1).items

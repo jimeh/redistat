@@ -1,12 +1,49 @@
 module Redistat
-  class Model
+  module Model
     
-    def self.create(*args)
-      Event.new(self.name, self.options, *args)
+    def self.included(base)
+      base.extend(self)
     end
     
-    def self.options
+    def store(label, stats = {}, date = nil, meta = {}, opts = {})
+      Event.new(name, label, date, stats, options.merge(opts), meta).save
+    end
+    alias :event :store
+    
+    def fetch(label, from, till, opts = {})
+      Finder.find({
+        :scope => name,
+        :label => label,
+        :from  => from,
+        :till  => till
+      }.merge(options.merge(opts)))
+    end
+    alias :find :fetch
+    
+    def depth(depth = nil)
+      if !depth.nil?
+        options[:depth] = depth
+      else
+        options[:depth] || nil
+      end
+    end
+    
+    def store_event(boolean = nil)
+      if !boolean.nil?
+        options[:store_event] = boolean
+      else
+        options[:store_event] || nil
+      end
+    end
+    
+    def options
       @options ||= {}
+    end
+    
+    private
+    
+    def name
+      @name ||= self.to_s
     end
     
   end
