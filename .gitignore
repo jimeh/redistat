@@ -19,6 +19,7 @@ rdoc
 pkg
 
 ## PROJECT::SPECIFIC
+.bundle/*
 .yardoc/*
 spec/db/*
 doc

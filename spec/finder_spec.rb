@@ -44,52 +44,60 @@ describe Redistat::Finder do
   end
   
   it "should fetch stats properly" do
-    create_example_stats
+    first_stat, last_stat = create_example_stats
     
-    three_hours_ago = 3.hours.ago
-    two_hours_from_now = 2.hours.from_now
-    depth = :hour
+    stats = Redistat::Finder.find({:from => first_stat, :till => last_stat, :scope => @scope, :label => @label, :depth => :hour})
+    stats.from.should  == first_stat
+    stats.till.should  == last_stat
+    stats.depth.should == :hour
     
-    stats = Redistat::Finder.find({:from => three_hours_ago, :till => two_hours_from_now, :scope => @scope, :label => @label, :depth => depth})
-    stats.should == { "views" => 9, "visitors" => 6 }
-    stats.date.to_s.should == three_hours_ago.to_rs.to_s(depth)
-    stats.till.to_s.should == two_hours_from_now.to_rs.to_s(depth)
+    stats.total.should == { "views" => 12, "visitors" => 8 }
+    stats.total.from.should == first_stat
+    stats.total.till.should == last_stat
+    stats.first.should == stats.total
+  end
+  
+  it "should fetch data per unit when interval option is specified" do
+    first_stat, last_stat = create_example_stats
+    
+    stats = Redistat::Finder.find(:from => first_stat, :till => last_stat, :scope => @scope, :label => @label, :depth => :hour, :interval => :hour)
+    stats.from.should == first_stat
+    stats.till.should == last_stat
+    stats.total.should == { "views" => 12, "visitors" => 8 }
+    stats[0].should == {}
+    stats[0].date.should == Time.parse("2010-05-14 12:00")
+    stats[1].should == {"visitors"=>"4", "views"=>"6"}
+    stats[1].date.should == Time.parse("2010-05-14 13:00")
+    stats[2].should == {"visitors"=>"2", "views"=>"3"}
+    stats[2].date.should == Time.parse("2010-05-14 14:00")
+    stats[3].should == {"visitors"=>"2", "views"=>"3"}
+    stats[3].date.should == Time.parse("2010-05-14 15:00")
+    stats[4].should == {}
+    stats[4].date.should == Time.parse("2010-05-14 16:00")
   end
   
   it "should return empty hash when attempting to fetch non-existent results" do
     stats = Redistat::Finder.find({:from => 3.hours.ago, :till => 2.hours.from_now, :scope => @scope, :label => @label, :depth => :hour})
-    stats.should == {}
-  end
-  
-  it "should fetch data per unit when interval option is specified" do
-    create_example_stats
-    
-    three_hours_ago = 3.hours.ago
-    two_hours_from_now = 2.hours.from_now
-    depth = :hour
-    
-    stats = Redistat::Finder.find(:from => 3.hours.ago, :till => 2.hours.ago, :scope => @scope, :label => @label, :depth => :hour, :interval => :hour)
-    puts "\n>>>>>> stats: " + stats.inspect + "\n"
+    stats.total.should == {}
   end
   
   it "should throw error on invalid options" do
-    begin
-      stats = Redistat::Finder.find(:from => 3.hours.ago)
-    rescue ArgumentError => e
-      e.class.to_s.should == "Redistat::InvalidOptions"
-    end
+    lambda { Redistat::Finder.find(:from => 3.hours.ago) }.should raise_error(Redistat::InvalidOptions)
   end
   
   
   # helper methods
   
   def create_example_stats
-    key = Redistat::Key.new(@scope, @label, 2.hours.ago)
+    key = Redistat::Key.new(@scope, @label, (first = Time.parse("2010-05-14 13:43")))
     Redistat::Summary.update(key, @stats, :hour)
-    key = Redistat::Key.new(@scope, @label, 1.hours.ago)
+    key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 13:53"))
     Redistat::Summary.update(key, @stats, :hour)
-    key = Redistat::Key.new(@scope, @label, 24.minutes.ago)
+    key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 14:32"))
     Redistat::Summary.update(key, @stats, :hour)
+    key = Redistat::Key.new(@scope, @label, (last = Time.parse("2010-05-14 15:02")))
+    Redistat::Summary.update(key, @stats, :hour)
+    [first - 1.hour, last + 1.hour]
   end
   
 end

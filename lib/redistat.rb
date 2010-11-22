@@ -1,14 +1,15 @@
 
 require 'rubygems'
 require 'active_support'
-require 'active_support/time' if !Time.respond_to?(:days_in_month) # Active Support 2.x and 3.x
+require 'active_support/hash_with_indifferent_access' if !Hash.respond_to?(:with_indifferent_access) # Active Support 2.x and 3.x
 require 'redis'
 require 'date'
 require 'time'
-require 'time/ext'
+require 'time_ext'
 require 'json'
 require 'digest/sha1'
 
+require 'redistat/collection'
 require 'redistat/database'
 require 'redistat/date'
 require 'redistat/event'

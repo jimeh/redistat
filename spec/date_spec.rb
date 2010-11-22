@@ -31,6 +31,14 @@ describe Redistat::Date do
     [:year, :month, :day, :hour, :min, :sec].each { |k| rdate.send(k).should == now.send(k) }
   end
   
+  it "should initialize from Redistat date String" do
+    now = Time.now
+    rdate = Redistat::Date.new(now.to_s)
+    [:year, :month, :day, :hour, :min, :sec].each { |k|
+      rdate.to_s(k).should == Redistat::Date.new(rdate.to_s(k)).to_s(k)
+    }
+  end
+  
   it "should convert to Time object" do
     now = Time.now
     rdate = Redistat::Date.new(now)

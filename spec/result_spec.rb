@@ -2,9 +2,11 @@ require "spec_helper"
 
 describe Redistat::Result do
   
-  before(:each) do
-    @name = "PageViews"
-    @scope = Redistat::Scope.new(@name)
+  it "should should initialize properly" do
+    options = {:from => "from", :till => "till"}
+    result = Redistat::Result.new(options)
+    result.from.should == "from"
+    result.till.should == "till"
   end
   
   it "should have set_or_incr method" do

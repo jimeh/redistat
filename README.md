@@ -1,6 +1,12 @@
-# redistat
+# Redistat
 
-Description goes here.
+A Redis-backed statistics storage and querying library written in Ruby.
+
+## Early Beta
+
+Currently this is an early beta release. Readme and documentation is forthcoming.
+
+For now, please check `spec/model_spec.rb` and `spec/model_helper.rb` to get started with how to use Redistat.
 
 
 ## Note on Patches/Pull Requests

@@ -26,27 +26,47 @@ module Redistat
     def find_by_interval(options = {})
       @options.merge!(options)
       raise InvalidOptions.new if !valid_options?
-      date_sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
-      
+      key = build_key
+      col = Collection.new(@options)
+      col.total = Result.new(@options)
+      build_date_sets.each do |set|
+        set[:add].each do |date|
+          result = Result.new
+          result.date = Date.new(date).to_time
+          db.hgetall("#{key.prefix}#{date}").each do |k, v|
+            result[k] = v
+            col.total.set_or_incr(k, v.to_i)
+          end
+          col << result
+        end
+      end
+      col
     end
     
     def find_by_magic(options = {})
       @options.merge!(options)
       raise InvalidOptions.new if !valid_options?
-      date_sets = Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
       key = Key.new(@options[:scope], @options[:label])
-      total_sum = Result.new
-      date_sets.each do |set|
+      col = Collection.new(@options)
+      col.total = Result.new(@options)
+      col << col.total
+      build_date_sets.each do |set|
         sum = Result.new
         sum = summarize_add_keys(set[:add], key, sum)
         sum = summarize_rem_keys(set[:rem], key, sum)
         sum.each do |k, v|
-          total_sum.set_or_incr(k, v.to_i)
+          col.total.set_or_incr(k, v.to_i)
         end
       end
-      total_sum.date = Date.new(@options[:from], @options[:depth])
-      total_sum.till = Date.new(@options[:till], @options[:depth])
-      total_sum
+      col
+    end
+    
+    def build_date_sets
+      Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
+    end
+    
+    def build_key
+      Key.new(@options[:scope], @options[:label])
     end
     
     def summarize_add_keys(sets, key, sum)

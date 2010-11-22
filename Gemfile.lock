@@ -1,0 +1,31 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activesupport (3.0.3)
+    diff-lcs (1.1.2)
+    i18n (0.4.2)
+    json (1.4.6)
+    redis (2.1.1)
+    rspec (2.1.0)
+      rspec-core (~> 2.1.0)
+      rspec-expectations (~> 2.1.0)
+      rspec-mocks (~> 2.1.0)
+    rspec-core (2.1.0)
+    rspec-expectations (2.1.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.1.0)
+    time_ext (0.2.6)
+      activesupport (>= 2.3.0)
+    yard (0.6.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activesupport (>= 2.3.0)
+  i18n
+  json (>= 1.0.0)
+  redis (>= 2.0.0)
+  rspec (>= 2.0.1)
+  time_ext (>= 0.2.6)
+  yard (>= 0.6.1)
