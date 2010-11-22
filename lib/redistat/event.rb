@@ -9,7 +9,7 @@ module Redistat
     attr_accessor :meta
     attr_accessor :options
     
-    def initialize(scope, label = nil, date = nil, stats = {}, meta = {}, options = {}, is_new = true)
+    def initialize(scope, label = nil, date = nil, stats = {}, options = {}, meta = {}, is_new = true)
       @options = default_options.merge(options)
       @key = Key.new(scope, label, date, @options)
       @stats = stats ||= {}
