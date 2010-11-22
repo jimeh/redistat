@@ -15,14 +15,14 @@ describe Redistat::Label do
   end
   
   it "should store a label hash lookup key" do
-    @label.save
-    @label.saved?.should be_true
-    db.get("#{Redistat::KEY_LEBELS}#{@label.hash}").should == @name
+    label = Redistat::Label.new(@name, {:hashed_label => true}).save
+    label.saved?.should be_true
+    db.get("#{Redistat::KEY_LEBELS}#{label.hash}").should == @name
     
-    @name = "contact_us"
-    @label = Redistat::Label.create(@name)
-    @label.saved?.should be_true
-    db.get("#{Redistat::KEY_LEBELS}#{@label.hash}").should == @name
+    name = "contact_us"
+    label = Redistat::Label.create(name, {:hashed_label => true})
+    label.saved?.should be_true
+    db.get("#{Redistat::KEY_LEBELS}#{label.hash}").should == name
   end
   
 end

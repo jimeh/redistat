@@ -20,6 +20,14 @@ module Redistat
     end
     alias :find :fetch
     
+    def hashed_label(boolean = nil)
+      if !boolean.nil?
+        options[:hashed_label] = boolean
+      else
+        options[:hashed_label] || nil
+      end
+    end
+    
     def depth(depth = nil)
       if !depth.nil?
         options[:depth] = depth
