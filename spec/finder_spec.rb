@@ -82,11 +82,7 @@ describe Redistat::Finder do
   end
   
   it "should throw error on invalid options" do
-    begin
-      stats = Redistat::Finder.find(:from => 3.hours.ago)
-    rescue ArgumentError => e
-      e.class.to_s.should == "Redistat::InvalidOptions"
-    end
+    lambda { Redistat::Finder.find(:from => 3.hours.ago) }.should raise_error(Redistat::InvalidOptions)
   end
   
   
