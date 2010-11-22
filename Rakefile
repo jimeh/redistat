@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = 'redistat'
-    gem.summary = 'TODO: one-line summary of your gem'
-    gem.description = 'TODO: longer description of your gem'
+    gem.summary = 'A Redis-backed statistics storage and querying library written in Ruby.'
+    gem.description = 'A Redis-backed statistics storage and querying library written in Ruby.'
     gem.email = 'contact@jimeh.me'
     gem.homepage = 'http://github.com/jimeh/redistat'
     gem.authors = ['Jim Myhrberg']
