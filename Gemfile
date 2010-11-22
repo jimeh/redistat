@@ -8,4 +8,5 @@ gem 'time_ext', '>= 0.2.6'
 group :development do
   gem 'rspec', '>= 2.0.1'
   gem 'yard', '>= 0.6.1'
+  gem 'i18n'
 end
