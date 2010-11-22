@@ -2,16 +2,23 @@ module Redistat
   class Label
     include Database
     
-    attr_reader :name
-    attr_reader :hash
+    attr_reader :raw
     
-    def initialize(str)
-      @name = str.to_s
-      @hash = Digest::SHA1.hexdigest(@name)
+    def initialize(str, options = {})
+      @options = options
+      @raw = str.to_s
+    end
+    
+    def name
+      @options[:hashed_label] ? hash : @raw
+    end
+    
+    def hash
+      @hash ||= Digest::SHA1.hexdigest(@raw)
     end
     
     def save
-      @saved = (db.set("#{KEY_LEBELS}#{@hash}", @name) == "OK")
+      @saved = (db.set("#{KEY_LEBELS}#{hash}", @raw) == "OK") if @options[:hashed_label]
       self
     end
     
@@ -19,8 +26,8 @@ module Redistat
       @saved ||= false
     end
     
-    def self.create(name)
-      self.new(name).save
+    def self.create(name, options = {})
+      self.new(name, options).save
     end
     
   end

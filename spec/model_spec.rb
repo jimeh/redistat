@@ -16,17 +16,23 @@ describe Redistat::Model do
   it "should listen to model-defined options" do
     ModelHelper2.depth.should == :day
     ModelHelper2.store_event.should == true
+    ModelHelper2.hashed_label.should == true
     
     ModelHelper.depth.should == nil
     ModelHelper.store_event.should == nil
+    ModelHelper.hashed_label.should == nil
     ModelHelper.depth(:hour)
     ModelHelper.depth.should == :hour
     ModelHelper.store_event(true)
     ModelHelper.store_event.should == true
+    ModelHelper.hashed_label(true)
+    ModelHelper.hashed_label.should == true
     ModelHelper.options[:depth] = nil
     ModelHelper.options[:store_event] = nil
+    ModelHelper.options[:hashed_label] = nil
     ModelHelper.depth.should == nil
     ModelHelper.store_event.should == nil
+    ModelHelper.hashed_label.should == nil
   end
   
   it "should store and fetch stats" do

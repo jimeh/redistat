@@ -11,5 +11,6 @@ class ModelHelper2
   
   depth :day
   store_event true
+  hashed_label true
   
 end

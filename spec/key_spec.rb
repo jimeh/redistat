@@ -19,24 +19,24 @@ describe Redistat::Key do
   end
   
   it "should convert to string properly" do
-    @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:hour)}"
+    @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:hour)}"
     props = [:year, :month, :day, :hour, :min, :sec]
     props.each do
-      @key.to_s(props.last).should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(props.last)}"
+      @key.to_s(props.last).should == "#{@scope}/#{@label}:#{@key.date.to_s(props.last)}"
       props.pop
     end
   end
   
-  it "should abide to hash_label option" do
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :label_hash => true})
+  it "should abide to hashed_label option" do
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :hashed_label => true})
     @key.to_s.should == "#{@scope}/#{@label_hash}:#{@key.date.to_s(:hour)}"
-    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :label_hash => false})
+    @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour, :hashed_label => false})
     @key.to_s.should == "#{@scope}/#{@label}:#{@key.date.to_s(:hour)}"
   end
   
   it "should have default depth option" do
     @key = Redistat::Key.new(@scope, @label, @date)
-    @key.depth.should == :day
+    @key.depth.should == :hour
   end
   
   it "should allow changing attributes" do
