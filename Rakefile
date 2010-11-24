@@ -55,3 +55,14 @@ rescue LoadError
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
   end
 end
+
+
+#
+# Misc.
+#
+
+desc "Start an irb console with TimeExt pre-loaded."
+task :console do
+  exec "irb -r spec/spec_helper"
+end
+task :c => :console
