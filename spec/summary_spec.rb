@@ -47,26 +47,3 @@ describe Redistat::Summary do
   end
   
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

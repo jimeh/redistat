@@ -82,23 +82,3 @@ module Redistat
   module_function :connect, :connection, :flush, :redis, :redis=, :options, :threaded
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
