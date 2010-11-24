@@ -11,10 +11,12 @@ begin
     gem.homepage = 'http://github.com/jimeh/redistat'
     gem.authors = ['Jim Myhrberg']
     gem.add_dependency 'activesupport', '>= 2.3.0'
-    gem.add_dependency 'json', '>= 1.0.0'
-    gem.add_dependency 'redis', '>= 2.0.0'
+    gem.add_dependency 'json', '>= 1.4.6'
+    gem.add_dependency 'redis', '>= 2.1.1'
+    gem.add_dependency 'system_timer', '>= 1.0.0'
     gem.add_dependency 'time_ext', '>= 0.2.6'
-    gem.add_development_dependency 'rspec', '>= 2.0.1'
+    gem.add_development_dependency 'jeweler', '>= 1.5.1'
+    gem.add_development_dependency 'rspec', '>= 2.1.0'
     gem.add_development_dependency 'yard', '>= 0.6.1'
   end
   Jeweler::GemcutterTasks.new
