@@ -101,12 +101,3 @@ describe Redistat::Finder do
   end
   
 end
-
-
-
-
-
-
-
-
-
