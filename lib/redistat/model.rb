@@ -18,7 +18,7 @@ module Redistat
         :till  => till
       }.merge(options.merge(opts)))
     end
-    alias :find :fetch
+    alias :lookup :fetch
     
     def hashed_label(boolean = nil)
       if !boolean.nil?
