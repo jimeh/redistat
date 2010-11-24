@@ -16,11 +16,11 @@ tmtags
 ## PROJECT::GENERAL
 coverage
 rdoc
-pkg
+pkg/*
+*.gem
+.bundle
 
 ## PROJECT::SPECIFIC
-.bundle/*
 .yardoc/*
 spec/db/*
-doc
-redistat.gemspec
+doc/*

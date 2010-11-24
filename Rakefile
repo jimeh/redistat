@@ -1,31 +1,11 @@
-require 'rubygems'
-require 'rake'
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = 'redistat'
-    gem.summary = 'A Redis-backed statistics storage and querying library written in Ruby.'
-    gem.description = 'A Redis-backed statistics storage and querying library written in Ruby.'
-    gem.email = 'contact@jimeh.me'
-    gem.homepage = 'http://github.com/jimeh/redistat'
-    gem.authors = ['Jim Myhrberg']
-    gem.add_dependency 'activesupport', '>= 2.3.0'
-    gem.add_dependency 'json', '>= 1.4.6'
-    gem.add_dependency 'redis', '>= 2.1.1'
-    gem.add_dependency 'system_timer', '>= 1.0.0'
-    gem.add_dependency 'time_ext', '>= 0.2.6'
-    gem.add_development_dependency 'jeweler', '>= 1.5.1'
-    gem.add_development_dependency 'rspec', '>= 2.1.0'
-    gem.add_development_dependency 'yard', '>= 0.6.1'
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
 
+#
 # Rspec
+#
+
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
@@ -36,12 +16,13 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-task :spec => :check_dependencies
-
 task :default => [:start, :spec, :stop]
 
 
+#
 # Start/stop Redis test server
+#
+
 REDIS_DIR = File.expand_path(File.join("..", "spec"), __FILE__)
 REDIS_CNF = File.join(REDIS_DIR, "redis-test.conf")
 REDIS_PID = File.join(REDIS_DIR, "db", "redis.pid")
@@ -62,7 +43,10 @@ task :stop do
 end
 
 
-# YARD Documentation
+#
+# Yard
+#
+
 begin
   require 'yard'
   YARD::Rake::YardocTask.new

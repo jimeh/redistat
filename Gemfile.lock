@@ -1,16 +1,20 @@
+PATH
+  remote: .
+  specs:
+    redistat (0.0.3)
+      activesupport (>= 2.3.0)
+      json (>= 1.4.6)
+      redis (>= 2.1.1)
+      system_timer (>= 1.0.0)
+      time_ext (>= 0.2.8)
+
 GEM
   remote: http://rubygems.org/
   specs:
     activesupport (3.0.3)
     diff-lcs (1.1.2)
-    git (1.2.5)
     i18n (0.4.2)
-    jeweler (1.5.1)
-      bundler (~> 1.0.0)
-      git (>= 1.2.5)
-      rake
     json (1.4.6)
-    rake (0.8.7)
     redis (2.1.1)
     rspec (2.1.0)
       rspec-core (~> 2.1.0)
@@ -21,8 +25,9 @@ GEM
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.1.0)
     system_timer (1.0)
-    time_ext (0.2.6)
+    time_ext (0.2.8)
       activesupport (>= 2.3.0)
+      i18n (>= 0.4.2)
     yard (0.6.3)
 
 PLATFORMS
@@ -30,11 +35,10 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (>= 2.3.0)
-  i18n
-  jeweler (>= 1.5.1)
   json (>= 1.4.6)
   redis (>= 2.1.1)
+  redistat!
   rspec (>= 2.1.0)
   system_timer (>= 1.0.0)
-  time_ext (>= 0.2.6)
+  time_ext (>= 0.2.8)
   yard (>= 0.6.3)
