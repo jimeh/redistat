@@ -3,10 +3,15 @@ module Redistat
     include Database
     
     attr_reader :raw
+    attr_reader :connection_ref
     
     def initialize(str, options = {})
       @options = options
       @raw = str.to_s
+    end
+
+    def db
+      super(@options[:connection_ref])
     end
     
     def name

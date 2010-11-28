@@ -4,21 +4,34 @@ module Redistat
     
     attr_reader :id
     attr_reader :key
+    attr_reader :connection_ref
     
     attr_accessor :stats
     attr_accessor :meta
     attr_accessor :options
     
     def initialize(scope, label = nil, date = nil, stats = {}, options = {}, meta = {}, is_new = true)
-      @options = default_options.merge(options)
+      @options = parse_options(options)
+      @connection_ref = @options[:connection_ref]
       @key = Key.new(scope, label, date, @options)
       @stats = stats ||= {}
       @meta = meta ||= {}
       @new = is_new
     end
+    
+    def db
+      super(@connection_ref)
+    end
+    
+    def parse_options(options)
+      default_options.each do |opt, val|
+        options[opt] = val if options[opt].nil?
+      end
+      options
+    end
 
     def default_options
-      { :depth => :hour, :store_event => false }
+      { :depth => :hour, :store_event => false, :connection_ref => nil }
     end
     
     def new?
@@ -59,7 +72,7 @@ module Redistat
     
     def save
       return false if !self.new?
-      Summary.update_all(@key, @stats, depth_limit)
+      Summary.update_all(@key, @stats, depth_limit, @connection_ref)
       if @options[:store_event]
         @id = self.next_id
         db.hmset("#{self.scope}#{KEY_EVENT}#{@id}",

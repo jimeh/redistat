@@ -8,5 +8,5 @@ require 'rspec'
 require 'rspec/autorun'
 
 # use the test Redistat instance
-Redistat.connect({:port => 8379, :db => 15})
-Redistat.flush
+Redistat.connect(:port => 8379, :db => 15)
+Redistat.redis.flushdb

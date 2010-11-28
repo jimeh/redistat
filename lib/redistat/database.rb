@@ -3,8 +3,8 @@ module Redistat
     def self.included(base)
       base.extend(Database)
     end
-    def db
-      Redistat.redis
+    def db(ref = nil)
+      Redistat.connection(ref)
     end
   end
 end
