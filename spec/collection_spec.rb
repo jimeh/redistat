@@ -10,4 +10,11 @@ describe Redistat::Collection do
     result.depth.should == options[:depth]
   end
   
+  it "should have a total property" do
+    col = Redistat::Collection.new()
+    col.total.should == {}
+    col.total = {:foo => "bar"}
+    col.total.should == {:foo => "bar"}
+  end
+  
 end
