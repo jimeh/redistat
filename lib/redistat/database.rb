@@ -4,7 +4,7 @@ module Redistat
       base.extend(Database)
     end
     def db
-      Redistat.redis
+      Redistat.connection
     end
   end
 end
