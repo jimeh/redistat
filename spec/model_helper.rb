@@ -1,6 +1,6 @@
 require "redistat"
 
-class ModelHelper
+class ModelHelper1
   include Redistat::Model
   
   
@@ -12,5 +12,12 @@ class ModelHelper2
   depth :day
   store_event true
   hashed_label true
+  
+end
+
+class ModelHelper3
+  include Redistat::Model
+  
+  connect_to :port => 8379, :db => 14
   
 end

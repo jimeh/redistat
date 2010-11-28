@@ -8,6 +8,10 @@ module Redistat
       @options = options
     end
     
+    def db
+      super(@options[:connection_ref])
+    end
+    
     def valid_options?
       return true if !@options[:scope].blank? && !@options[:label].blank? && !@options[:from].blank? && !@options[:till].blank?
       false

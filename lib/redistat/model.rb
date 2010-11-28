@@ -1,5 +1,6 @@
 module Redistat
   module Model
+    include Redistat::Database
     
     def self.included(base)
       base.extend(self)
@@ -9,6 +10,16 @@ module Redistat
       Event.new(name, label, date, stats, options.merge(opts), meta).save
     end
     alias :event :store
+    
+    def connect_to(opts = {})
+      Connection.create(opts.merge(:ref => name))
+      options[:connection_ref] = name
+    end
+    
+    def connection
+      db(options[:connection_ref])
+    end
+    alias :redis :connection
     
     def fetch(label, from, till, opts = {})
       Finder.find({
