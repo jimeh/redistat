@@ -38,20 +38,20 @@ describe Redistat::Connection do
   end
   
   it "should handle multiple connections with refs" do
-    Redistat.redis.client.port.should == 8379
-    Redistat.connect(:port => 6379, :db => 15, :ref => "Custom")
-    Redistat.redis.client.port.should == 8379
-    Redistat.redis("Custom").client.port.should == 6379
+    Redistat.redis.client.db.should == 15
+    Redistat.connect(:port => 8379, :db => 14, :ref => "Custom")
+    Redistat.redis.client.db.should == 15
+    Redistat.redis("Custom").client.db.should == 14
   end
   
   it "should be able to overwrite default and custom refs" do
-    Redistat.redis.client.port.should == 8379
-    Redistat.connect(:port => 6379, :db => 15)
-    Redistat.redis.client.port.should == 6379
+    Redistat.redis.client.db.should == 15
+    Redistat.connect(:port => 8379, :db => 14)
+    Redistat.redis.client.db.should == 14
     
-    Redistat.redis("Custom").client.port.should == 6379
+    Redistat.redis("Custom").client.db.should == 14
     Redistat.connect(:port => 8379, :db => 15, :ref => "Custom")
-    Redistat.redis("Custom").client.port.should == 8379
+    Redistat.redis("Custom").client.db.should == 15
     
     # Reset the default connection to the testing server or all hell
     # might brake loose from the rest of the specs
