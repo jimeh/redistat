@@ -12,5 +12,9 @@ module Redistat
       @depth = options[:depth] ||= nil
     end
     
+    def total
+      @total ||= {}
+    end
+    
   end
 end
