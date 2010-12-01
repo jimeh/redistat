@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    redistat (0.0.5)
+    redistat (0.0.6)
       activesupport (>= 2.3.0)
       json (>= 1.4.0)
       redis (>= 2.1.0)
