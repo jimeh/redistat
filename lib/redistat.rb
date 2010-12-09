@@ -54,7 +54,7 @@ module Redistat
     end
     
     def flush
-      puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flush instead."
+      puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flushdb instead."
       connection.flushdb
     end
     
