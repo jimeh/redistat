@@ -20,8 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_runtime_dependency 'activesupport', '>= 2.3.0'
-  s.add_runtime_dependency 'json', '>= 1.4.6'
-  s.add_runtime_dependency 'redis', '>= 2.1.1'
+  s.add_runtime_dependency 'json', '>= 1.4.0'
+  s.add_runtime_dependency 'redis', '>= 2.1.0'
   s.add_runtime_dependency 'system_timer', '>= 1.0.0'
   s.add_runtime_dependency 'time_ext', '>= 0.2.8'
   
