@@ -46,10 +46,10 @@ describe Redistat::Key do
     @key.scope = @scope
     @key.scope.should == @scope
     # date
-    @key.date.to_time.should == @date
+    @key.date.to_time.to_s.should == @date.to_s
     @date = Time.now
     @key.date = @date
-    @key.date.to_time.should == @date
+    @key.date.to_time.to_s.should == @date.to_s
     # label
     @key.label.should == @label
     @key.label_hash == @label_hash
