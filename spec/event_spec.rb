@@ -20,7 +20,7 @@ describe Redistat::Event do
     @event.scope.should == @scope
     @event.label.should == @label
     @event.label_hash.should == @label_hash
-    @event.date.to_time.should == @date
+    @event.date.to_time.to_s.should == @date.to_s
     @event.stats.should == @stats
     @event.meta.should == @meta
     @event.options.should == @event.default_options.merge(@options)
@@ -28,10 +28,10 @@ describe Redistat::Event do
 
   it "should allow changing attributes" do
     # date
-    @event.date.to_time.should == @date
+    @event.date.to_time.to_s.should == @date.to_s
     @date = Time.now
     @event.date = @date
-    @event.date.to_time.should == @date
+    @event.date.to_time.to_s.should == @date.to_s
     # label
     @event.label.should == @label
     @event.label_hash.should == @label_hash
