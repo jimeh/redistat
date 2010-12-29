@@ -14,6 +14,8 @@ Redis fits perfectly with all of these requirements. It has atomic operations li
 
     gem install redistat
 
+If you are using Ruby 1.8.x, it's recommended you also install the `system_timer` gem, as the Redis gem will otherwise complain.
+
 ## Usage
 
 The simplest way to use Redistat is through the model wrapper.
