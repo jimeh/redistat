@@ -21,3 +21,10 @@ class ModelHelper3
   connect_to :port => 8379, :db => 14
   
 end
+
+class ModelHelper4
+  include Redistat::Model
+  
+  class_name "FancyHelper"
+  
+end

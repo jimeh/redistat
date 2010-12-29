@@ -8,6 +8,7 @@ describe Redistat::Model do
     ModelHelper1.redis.flushdb
     ModelHelper2.redis.flushdb
     ModelHelper3.redis.flushdb
+    ModelHelper4.redis.flushdb
   end
   
   it "should should name itself correctly" do
@@ -19,6 +20,7 @@ describe Redistat::Model do
     ModelHelper2.depth.should == :day
     ModelHelper2.store_event.should == true
     ModelHelper2.hashed_label.should == true
+    ModelHelper2.class_name.should be_nil
     
     ModelHelper1.depth.should == nil
     ModelHelper1.store_event.should == nil
@@ -35,6 +37,9 @@ describe Redistat::Model do
     ModelHelper1.depth.should == nil
     ModelHelper1.store_event.should == nil
     ModelHelper1.hashed_label.should == nil
+    
+    ModelHelper4.class_name.should == "FancyHelper"
+    ModelHelper4.send(:name).should == "FancyHelper"
   end
   
   it "should store and fetch stats" do
