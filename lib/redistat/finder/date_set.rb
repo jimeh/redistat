@@ -42,7 +42,7 @@ module Redistat
         return find_start_year_for(start_date, end_date, lowest_depth) if unit == :year
         index = Date::DEPTHS.index(unit)
         nunit = Date::DEPTHS[(index > 0) ? index-1 : index]
-        if start_date < start_date.round(nunit) || start_date.next(nunit).beginning_of(nunit) > end_date.beginning_of(nunit)
+        if start_date < start_date.beginning_of_closest(nunit) || start_date.next(nunit).beginning_of(nunit) > end_date.beginning_of(nunit)
           add = []
           start_date.beginning_of_each(unit, :include_start => lowest_depth).until(start_date.end_of(nunit)) do |t|
             add << t.to_rs.to_s(unit) if t < end_date.beginning_of(unit)
@@ -59,7 +59,7 @@ module Redistat
         index = Date::DEPTHS.index(unit)
         nunit = Date::DEPTHS[(index > 0) ? index-1 : index]
         has_nunit = end_date.prev(nunit).beginning_of(nunit) >= start_date.beginning_of(nunit)
-        nearest_nunit = end_date.round(nunit)
+        nearest_nunit = end_date.beginning_of_closest(nunit)
         if end_date >= nearest_nunit && has_nunit
           add = []
           end_date.beginning_of(nunit).beginning_of_each(unit, :include_start => true, :include_end => lowest_depth).until(end_date) do |t|
