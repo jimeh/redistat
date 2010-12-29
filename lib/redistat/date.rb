@@ -22,6 +22,8 @@ module Redistat
         from_string(input)
       elsif input.is_a?(::Fixnum)
         from_integer(input)
+      elsif input.is_a?(::Bignum)
+        from_integer(input)
       end
     end
     

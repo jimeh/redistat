@@ -26,6 +26,7 @@ require 'redistat/summary'
 require 'redistat/core_ext/date'
 require 'redistat/core_ext/time'
 require 'redistat/core_ext/fixnum'
+require 'redistat/core_ext/bignum'
 
 module Redistat
   
@@ -54,7 +55,7 @@ module Redistat
     end
     
     def flush
-      puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flush instead."
+      puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flushdb instead."
       connection.flushdb
     end
     

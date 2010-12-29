@@ -39,6 +39,15 @@ module Redistat
       end
     end
     
+    def class_name(class_name = nil)
+      if !class_name.nil?
+        options[:class_name] = class_name
+      else
+        options[:class_name] || nil
+      end
+    end
+    alias :scope :class_name
+    
     def depth(depth = nil)
       if !depth.nil?
         options[:depth] = depth
@@ -62,7 +71,7 @@ module Redistat
     private
     
     def name
-      @name ||= self.to_s
+      options[:class_name] || (@name ||= self.to_s)
     end
     
   end
