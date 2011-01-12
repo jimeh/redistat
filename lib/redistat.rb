@@ -23,6 +23,7 @@ require 'redistat/model'
 require 'redistat/result'
 require 'redistat/scope'
 require 'redistat/summary'
+require 'redistat/version'
 
 require 'redistat/core_ext/date'
 require 'redistat/core_ext/time'
