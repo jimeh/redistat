@@ -18,6 +18,7 @@ module Redistat
       end
       
       def create(options = {})
+        #TODO clean/remove all ref-less connections
         ref = options.delete(:ref) || :default
         options.reverse_merge!(default_options)
         conn = (connections[connection_id(options)] ||= connection(options))
@@ -26,15 +27,11 @@ module Redistat
       end
       
       def connections
-        threaded[:connections] ||= {}
+        @connections ||= {}
       end
       
       def references
-        threaded[:references] ||= {}
-      end
-      
-      def threaded
-        Thread.current[:redistat] ||= {}
+        @references ||= {}
       end
       
       private
