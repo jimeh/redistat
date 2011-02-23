@@ -1,5 +1,5 @@
 module Redistat
-  class Result < ::ActiveSupport::HashWithIndifferentAccess
+  class Result < HashWithIndifferentAccess
     
     attr_accessor :from
     attr_accessor :till
