@@ -2,9 +2,10 @@ module Redistat
   class Summary
     include Database
     
-    def self.update_all(key, stats = {}, depth_limit = nil, connection_ref = nil)
+    def self.update_all(key, stats = {}, depth_limit = nil, connection_ref = nil, enable_grouping = nil)
       stats ||= {}
-      stats = inject_group_summaries(stats)
+      enable_grouping = true if enable_grouping.nil?
+      stats = inject_group_summaries(stats) if enable_grouping
       depth_limit ||= key.depth
       return nil if stats.size == 0
       Date::DEPTHS.each do |depth|

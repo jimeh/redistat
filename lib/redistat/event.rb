@@ -31,7 +31,10 @@ module Redistat
     end
 
     def default_options
-      { :depth => :hour, :store_event => false, :connection_ref => nil }
+      { :depth => :hour,
+        :store_event => false,
+        :connection_ref => nil,
+        :enable_grouping => true }
     end
     
     def new?
@@ -72,7 +75,7 @@ module Redistat
     
     def save
       return false if !self.new?
-      Summary.update_all(@key, @stats, depth_limit, @connection_ref)
+      Summary.update_all(@key, @stats, depth_limit, @connection_ref, @options[:enable_grouping])
       if @options[:store_event]
         @id = self.next_id
         db.hmset("#{self.scope}#{KEY_EVENT}#{@id}",
