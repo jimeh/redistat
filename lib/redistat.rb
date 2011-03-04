@@ -36,6 +36,7 @@ module Redistat
   KEY_EVENT = ".event:"
   KEY_LEBELS = "Redistat.lables:"
   KEY_EVENT_IDS = ".event_ids"
+  GROUP_SEPARATOR = "/"
   
   class InvalidOptions < ArgumentError; end
   class RedisServerIsTooOld < Exception; end

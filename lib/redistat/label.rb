@@ -5,6 +5,10 @@ module Redistat
     attr_reader :raw
     attr_reader :connection_ref
     
+    def self.create(name, options = {})
+      self.new(name, options).save
+    end
+    
     def initialize(str, options = {})
       @options = options
       @raw = str.to_s
@@ -31,8 +35,18 @@ module Redistat
       @saved ||= false
     end
     
-    def self.create(name, options = {})
-      self.new(name, options).save
+    def groups
+      return @groups if @groups
+      @groups = []
+      parent = ""
+      @raw.split(GROUP_SEPARATOR).each do |part|
+        if !part.blank?
+          group = ((parent.blank?) ? "" : "#{parent}/") + part
+          @groups << group
+          parent = group
+        end
+      end
+      @groups.reverse!
     end
     
   end
