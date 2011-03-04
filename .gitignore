@@ -19,6 +19,7 @@ rdoc
 pkg/*
 *.gem
 .bundle
+Gemfile.lock
 
 ## PROJECT::SPECIFIC
 .yardoc/*
