@@ -46,4 +46,25 @@ describe Redistat::Summary do
     end
   end
   
+  it "should inject stats key grouping summaries" do
+    hash = { "count/hello" => 3, "count/world"   => 7,
+             "death/bomb"  => 4, "death/unicorn" => 3,
+             :"od/sugar"   => 7, :"od/meth"      => 8 }
+    res = Redistat::Summary.send(:inject_group_summaries, hash)
+    res.should == { "count" => 10, "count/hello" => 3, "count/world"   => 7,
+                    "death" => 7, "death/bomb"   => 4, "death/unicorn" => 3,
+                    "od"    => 15, :"od/sugar"    => 7, :"od/meth"       => 8 }
+  end
+  
+  it "should properly store key group summaries" do
+    stats = {"views" => 3, "visitors/eu" => 2, "visitors/us" => 4}
+    Redistat::Summary.update_all(@key, stats, :hour)
+    summary = db.hgetall(@key.to_s(:hour))
+    summary.should have(4).items
+    summary["views"].should == "3"
+    summary["visitors"].should == "6"
+    summary["visitors/eu"].should == "2"
+    summary["visitors/us"].should == "4"
+  end
+  
 end
