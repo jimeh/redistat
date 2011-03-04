@@ -39,8 +39,18 @@ module Redistat
       @label.hash
     end
     
+    def label_groups
+      @label.groups
+    end
+    
     def label=(input)
       @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
+    end
+    
+    def groups
+      @groups ||= label_groups.map do |label_name|
+        self.class.new(@scope, label_name, self.date, @options)
+      end
     end
     
     def to_s(depth = nil)

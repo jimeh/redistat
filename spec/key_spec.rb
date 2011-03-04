@@ -14,6 +14,7 @@ describe Redistat::Key do
     @key.scope.should == @scope
     @key.label.should == @label
     @key.label_hash.should == @label_hash
+    @key.label_groups.should == @key.instance_variable_get("@label").groups
     @key.date.should be_instance_of(Redistat::Date)
     @key.date.to_time.to_s.should == @date.to_s
   end
@@ -58,6 +59,18 @@ describe Redistat::Key do
     @key.label = @label
     @key.label.should == @label
     @key.label_hash == @label_hash
+  end
+  
+  it "should create a group of keys from label group" do
+    label = 'message/public/offensive'
+    result = [ "message/public/offensive",
+               "message/public",
+               "message" ]
+    
+    key = Redistat::Key.new(@scope, label, @date, {:depth => :hour})
+    
+    key.label_groups.should == result
+    key.groups.map { |k| k.label }.should == result
   end
   
 end
