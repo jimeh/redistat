@@ -52,8 +52,8 @@ describe Redistat::Summary do
              :"od/sugar"   => 7, :"od/meth"      => 8 }
     res = Redistat::Summary.send(:inject_group_summaries, hash)
     res.should == { "count" => 10, "count/hello" => 3, "count/world"   => 7,
-                    "death" => 7, "death/bomb"   => 4, "death/unicorn" => 3,
-                    "od"    => 15, :"od/sugar"    => 7, :"od/meth"       => 8 }
+                    "death" => 7,  "death/bomb"  => 4, "death/unicorn" => 3,
+                    "od"    => 15, :"od/sugar"   => 7, :"od/meth"      => 8 }
   end
   
   it "should properly store key group summaries" do
@@ -77,4 +77,47 @@ describe Redistat::Summary do
     summary["visitors/us"].should == "4"
   end
   
+  it "should store label-based grouping enabled stats" do
+    stats = {"views" => 3, "visitors/eu" => 2, "visitors/us" => 4}
+    label = "views/about_us"
+    key = Redistat::Key.new(@scope, label, @date)
+    Redistat::Summary.update_all(key, stats, :hour)
+
+    key.groups[0].label.should == "views/about_us"
+    key.groups[1].label.should == "views"
+    child1 = key.groups[0]
+    parent = key.groups[1]
+    
+    label = "views/contact"
+    key = Redistat::Key.new(@scope, label, @date)
+    Redistat::Summary.update_all(key, stats, :hour)
+    
+    key.groups[0].label.should == "views/contact"
+    key.groups[1].label.should == "views"
+    child2 = key.groups[0]
+    
+    summary = db.hgetall(child1.to_s(:hour))
+    summary["views"].should == "3"
+    summary["visitors/eu"].should == "2"
+    summary["visitors/us"].should == "4"
+    
+    summary = db.hgetall(child2.to_s(:hour))
+    summary["views"].should == "3"
+    summary["visitors/eu"].should == "2"
+    summary["visitors/us"].should == "4"
+    
+    summary = db.hgetall(parent.to_s(:hour))
+    summary["views"].should == "6"
+    summary["visitors/eu"].should == "4"
+    summary["visitors/us"].should == "8"
+  end
+  
 end
+
+
+
+
+
+
+
+

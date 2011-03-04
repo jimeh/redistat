@@ -4,17 +4,29 @@ module Redistat
     
     def self.update_all(key, stats = {}, depth_limit = nil, connection_ref = nil, enable_grouping = nil)
       stats ||= {}
-      enable_grouping = true if enable_grouping.nil?
-      stats = inject_group_summaries(stats) if enable_grouping
-      depth_limit ||= key.depth
       return nil if stats.size == 0
+      
+      depth_limit ||= key.depth
+      enable_grouping = true if enable_grouping.nil?
+      
+      if enable_grouping
+        stats = inject_group_summaries(stats)
+        key.groups.each { |k|
+          update_key(k, stats, depth_limit, connection_ref)
+        }
+      else
+        update_key(key, stats, depth_limit, connection_ref)
+      end
+    end
+    
+    private
+    
+    def self.update_key(key, stats, depth_limit, connection_ref)
       Date::DEPTHS.each do |depth|
         update(key, stats, depth, connection_ref)
         break if depth == depth_limit
       end
     end
-    
-    private
     
     def self.update(key, stats, depth, connection_ref = nil)
       stats.each do |field, value|
