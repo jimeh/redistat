@@ -32,6 +32,13 @@ describe Redistat::Label do
     label.groups.should == [ "message/public/offensive",
                              "message/public",
                              "message" ]
+
+    name = "/message/public/"
+    label = Redistat::Label.new(name)
+    label.name.should == name
+    label.groups.should == [ "message/public",
+                             "message" ]
+
     name = "message"
     label = Redistat::Label.new(name)
     label.name.should == name
