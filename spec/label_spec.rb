@@ -25,4 +25,17 @@ describe Redistat::Label do
     db.get("#{Redistat::KEY_LEBELS}#{label.hash}").should == name
   end
   
+  it "should separate label names into groups" do
+    name = "message/public/offensive"
+    label = Redistat::Label.new(name)
+    label.name.should == name
+    label.groups.should == [ "message/public/offensive",
+                             "message/public",
+                             "message" ]
+    name = "message"
+    label = Redistat::Label.new(name)
+    label.name.should == name
+    label.groups.should == [ "message" ]
+  end
+  
 end
