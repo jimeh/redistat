@@ -19,6 +19,10 @@ describe Redistat::Finder do
     
     finder = Redistat::Finder.new(options)
     finder.options.should == options
+    
+    finder = Redistat::Finder.new
+    finder.send(:set_options, options)
+    finder.options.should == options
 
     finder = Redistat::Finder.dates(two_hours_ago, one_hour_ago).scope("PageViews").label("Label").depth(:hour).interval(:hour)
     finder.options.should == options
@@ -55,6 +59,29 @@ describe Redistat::Finder do
     stats.total.from.should == first_stat
     stats.total.till.should == last_stat
     stats.first.should == stats.total
+  end
+  
+  it "should be lazy-loaded" do
+    first_stat, last_stat = create_example_stats
+    
+    finder = Redistat::Finder.new
+    finder.from(first_stat).till(last_stat)
+    finder.scope(@scope).label(@label)
+    finder.depth(:hour)
+    
+    finder.instance_variable_get("@result").should be_nil
+    stats = finder.all
+    finder.instance_variable_get("@result").should_not be_nil
+    
+    stats.total.should == { "views" => 12, "visitors" => 8 }
+    stats.total.from.should == first_stat
+    stats.total.till.should == last_stat
+    stats.first.should == stats.total
+    
+    finder.all.object_id.should == stats.object_id
+    finder.from(first_stat + 1.hour)
+    finder.instance_variable_get("@result").should be_nil
+    finder.all.object_id.should_not == stats.object_id
   end
   
   it "should fetch data per unit when interval option is specified" do
