@@ -19,6 +19,10 @@ describe Redistat::Finder do
     
     finder = Redistat::Finder.new(options)
     finder.options.should == options
+    
+    finder = Redistat::Finder.new
+    finder.send(:set_options, options)
+    finder.options.should == options
 
     finder = Redistat::Finder.dates(two_hours_ago, one_hour_ago).scope("PageViews").label("Label").depth(:hour).interval(:hour)
     finder.options.should == options
@@ -85,6 +89,65 @@ describe Redistat::Finder do
     lambda { Redistat::Finder.find(:from => 3.hours.ago) }.should raise_error(Redistat::InvalidOptions)
   end
   
+  describe "Lazy-Loading" do
+    
+    before(:each) do
+      @first_stat, @last_stat = create_example_stats
+
+      @finder = Redistat::Finder.new
+      @finder.from(@first_stat).till(@last_stat).scope(@scope).label(@label).depth(:hour)
+      
+      @match = [{}, {"visitors"=>"4", "views"=>"6"},
+                    {"visitors"=>"2", "views"=>"3"},
+                    {"visitors"=>"2", "views"=>"3"}, {}]
+    end
+    
+    it "should lazy-load" do
+
+      @finder.instance_variable_get("@result").should be_nil
+      stats = @finder.all
+      @finder.instance_variable_get("@result").should_not be_nil
+      
+      stats.should == @finder.find # find method directly fetches results
+      stats.total.should == @finder.total
+      stats.total.should == { "views" => 12, "visitors" => 8 }
+      stats.total.from.should == @first_stat
+      stats.total.till.should == @last_stat
+      stats.first.should == stats.total
+
+      @finder.all.object_id.should == stats.object_id
+      @finder.from(@first_stat + 2.hours)
+      @finder.instance_variable_get("@result").should be_nil
+      @finder.all.object_id.should_not == stats.object_id
+      stats = @finder.all
+      stats.total.should == { "views" => 6, "visitors" => 4 }
+    end
+    
+    it "should handle #map" do
+      @finder.interval(:hour)
+      @finder.map { |r| r }.should == @match
+    end
+    
+    it "should handle #each" do
+      @finder.interval(:hour)
+      
+      res = []
+      @finder.each { |r| res << r }
+      res.should == @match
+    end
+    
+    it "should handle #each_with_index" do
+      @finder.interval(:hour)
+      
+      res = {}
+      match = {}
+      @finder.each_with_index { |r, i| res[i] = r }
+      @match.each_with_index { |r, i| match[i] = r }
+      res.should == match
+    end
+    
+  end
+  
   
   # helper methods
   
@@ -93,7 +156,7 @@ describe Redistat::Finder do
     Redistat::Summary.update(key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 13:53"))
     Redistat::Summary.update(key, @stats, :hour)
-    key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 14:32"))
+    key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 14:52"))
     Redistat::Summary.update(key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, (last = Time.parse("2010-05-14 15:02")))
     Redistat::Summary.update(key, @stats, :hour)

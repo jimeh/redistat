@@ -17,6 +17,17 @@ describe Redistat::Model do
     ModelHelper2.send(:name).should == "ModelHelper2"
   end
   
+  it "should return a Finder" do
+    two_hours_ago = 2.hours.ago
+    one_hour_ago  = 1.hour.ago
+    finder = ModelHelper1.find('label', two_hours_ago, one_hour_ago)
+    finder.should be_a(Redistat::Finder)
+    finder.options[:scope].should == 'ModelHelper1'
+    finder.options[:label].should == 'label'
+    finder.options[:from].should  == two_hours_ago
+    finder.options[:till].should  == one_hour_ago
+  end
+  
   it "should listen to model-defined options" do
     ModelHelper2.depth.should == :day
     ModelHelper2.store_event.should == true
