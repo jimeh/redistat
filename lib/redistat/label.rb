@@ -28,6 +28,7 @@ module Redistat
     
     def save
       @saved = (db.set("#{KEY_LEBELS}#{hash}", @raw) == "OK") if @options[:hashed_label]
+      update_index if groups.size > 1 # TODO: add a label_indexing option
       self
     end
     
