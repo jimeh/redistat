@@ -9,41 +9,43 @@ describe Redistat::Finder do
     @label = "about_us"
     @date = Time.now
     @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
-    @stats = {"views" => 3, "visitors" => 2}
+    @stats = {"views" => 3, "visitors" => 2}    
+    @two_hours_ago = 2.hours.ago
+    @one_hour_ago = 1.hour.ago
   end
   
   it "should initialize properly" do
-    two_hours_ago = 2.hours.ago
-    one_hour_ago = 1.hour.ago
-    options = {:scope => "PageViews", :label => "Label", :from => two_hours_ago, :till => one_hour_ago, :depth => :hour, :interval => :hour}
-    
-    finder = Redistat::Finder.new(options)
-    finder.options.should == options
+    options = {:scope => "PageViews", :label => "Label", :from => @two_hours_ago, :till => @one_hour_ago, :depth => :hour, :interval => :hour}
     
     finder = Redistat::Finder.new
     finder.send(:set_options, options)
-    finder.options.should == options
-
-    finder = Redistat::Finder.dates(two_hours_ago, one_hour_ago).scope("PageViews").label("Label").depth(:hour).interval(:hour)
-    finder.options.should == options
-                                    
-    finder = Redistat::Finder.scope("PageViews").label("Label").from(two_hours_ago).till(one_hour_ago).depth(:hour).interval(:hour)
-    finder.options.should == options
+    finder.options[:scope].should be_a(Redistat::Scope)
+    finder.options[:scope].to_s.should == options[:scope]
+    finder.options[:label].should be_a(Redistat::Label)
+    finder.options[:label].to_s.should == options[:label]
+    finder.options.should == options.merge(:scope => finder.options[:scope], :label => finder.options[:label])
     
-    finder = Redistat::Finder.label("Label").from(two_hours_ago).till(one_hour_ago).depth(:hour).interval(:hour).scope("PageViews")
-    finder.options.should == options
+    finder = Redistat::Finder.dates(@two_hours_ago, @one_hour_ago)
+    finder.options[:from].should == @two_hours_ago
+    finder.options[:till].should == @one_hour_ago
     
-    finder = Redistat::Finder.from(two_hours_ago).till(one_hour_ago).depth(:hour).interval(:hour).scope("PageViews").label("Label")
-    finder.options.should == options
+    finder = Redistat::Finder.scope("hello")
+    finder.options[:scope].to_s.should == "hello"
     
-    finder = Redistat::Finder.till(one_hour_ago).depth(:hour).interval(:hour).scope("PageViews").label("Label").from(two_hours_ago)
-    finder.options.should == options
+    finder = Redistat::Finder.label("hello")
+    finder.options[:label].to_s.should == "hello"
     
-    finder = Redistat::Finder.depth(:hour).interval(:hour).scope("PageViews").label("Label").from(two_hours_ago).till(one_hour_ago)
-    finder.options.should == options
+    finder = Redistat::Finder.from(@two_hours_ago)
+    finder.options[:from].should == @two_hours_ago
     
-    finder = Redistat::Finder.interval(:hour).scope("PageViews").label("Label").from(two_hours_ago).till(one_hour_ago).depth(:hour)
-    finder.options.should == options
+    finder = Redistat::Finder.till(@one_hour_ago)
+    finder.options[:till].should == @one_hour_ago
+    
+    finder = Redistat::Finder.depth(:hour)
+    finder.options[:depth].should == :hour
+    
+    finder = Redistat::Finder.interval(:hour)
+    finder.options[:interval].should == :hour
     
   end
   
@@ -89,6 +91,21 @@ describe Redistat::Finder do
     lambda { Redistat::Finder.find(:from => 3.hours.ago) }.should raise_error(Redistat::InvalidOptions)
   end
   
+  it "should find children" do
+    Redistat::Key.new("PageViews", "message/public/die").update_index
+    Redistat::Key.new("PageViews", "message/public/live").update_index
+    Redistat::Key.new("PageViews", "message/public/fester").update_index
+    members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}message/public") # checking 'message/public'
+    options = {:scope => "PageViews", :label => "message/public", :from => @two_hours_ago, :till => @one_hour_ago, :depth => :hour, :interval => :hour}
+    finder = Redistat::Finder.new(options)
+    finder.children.first.should be_a(Redistat::Finder)
+    subs = finder.children.map { |f| f.options[:label].me }
+    subs.should have(3).items
+    subs.should include('die')
+    subs.should include('live')
+    subs.should include('fester')
+  end
+  
   describe "Lazy-Loading" do
     
     before(:each) do
@@ -103,7 +120,6 @@ describe Redistat::Finder do
     end
     
     it "should lazy-load" do
-
       @finder.instance_variable_get("@result").should be_nil
       stats = @finder.all
       @finder.instance_variable_get("@result").should_not be_nil
@@ -146,7 +162,7 @@ describe Redistat::Finder do
       res.should == match
     end
     
-  end
+  end # "Lazy-Loading"
   
   
   # helper methods

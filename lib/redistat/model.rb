@@ -21,7 +21,7 @@ module Redistat
     alias :lookup :fetch
 
     def find(label, from, till, opts = {})
-      Finder.new( { :scope => name,
+      Finder.new( { :scope => self.name,
                     :label => label,
                     :from  => from,
                     :till  => till }.merge(options.merge(opts)) )

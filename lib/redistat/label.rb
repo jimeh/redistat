@@ -2,7 +2,6 @@ module Redistat
   class Label
     include Database
     
-    attr_reader :raw
     attr_reader :connection_ref
     
     def self.create(name, options = {})
@@ -13,21 +12,25 @@ module Redistat
       @options = options
       @raw = str.to_s
     end
+    
+    def to_s
+      @raw
+    end
 
     def db
       super(@options[:connection_ref])
     end
     
     def name
-      @options[:hashed_label] ? hash : @raw
+      @options[:hashed_label] ? hash : self.to_s
     end
     
     def hash
-      @hash ||= Digest::SHA1.hexdigest(@raw)
+      @hash ||= Digest::SHA1.hexdigest(self.to_s)
     end
     
     def save
-      @saved = (db.set("#{KEY_LEBELS}#{hash}", @raw) == "OK") if @options[:hashed_label]
+      @saved = (db.set("#{KEY_LEBELS}#{hash}", self.to_s) == "OK") if @options[:hashed_label]
       self
     end
     
@@ -35,14 +38,22 @@ module Redistat
       @saved ||= false
     end
     
+    def parent
+      @parent ||= groups[1] if groups.size > 1
+    end
+    
+    def me
+      self.to_s.split(GROUP_SEPARATOR).last
+    end
+    
     def groups
-      return @groups if @groups
+      return @groups unless @groups.nil?
       @groups = []
       parent = ""
-      @raw.split(GROUP_SEPARATOR).each do |part|
+      self.to_s.split(GROUP_SEPARATOR).each do |part|
         if !part.blank?
-          group = ((parent.blank?) ? "" : "#{parent}/") + part
-          @groups << group
+          group = ((parent.blank?) ? "" : "#{parent}#{GROUP_SEPARATOR}") + part
+          @groups << Label.new(group)
           parent = group
         end
       end

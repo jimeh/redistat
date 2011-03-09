@@ -1,8 +1,10 @@
 require "spec_helper"
 
 describe Redistat::Key do
+  include Redistat::Database
   
   before(:each) do
+    db.flushdb
     @scope = "PageViews"
     @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
@@ -12,9 +14,9 @@ describe Redistat::Key do
   
   it "should initialize properly" do
     @key.scope.should == @scope
-    @key.label.should == @label
+    @key.label.to_s.should == @label
     @key.label_hash.should == @label_hash
-    @key.label_groups.should == @key.instance_variable_get("@label").groups
+    @key.groups.map { |k| k.instance_variable_get("@label") }.should == @key.instance_variable_get("@label").groups
     @key.date.should be_instance_of(Redistat::Date)
     @key.date.to_time.to_s.should == @date.to_s
   end
@@ -52,25 +54,70 @@ describe Redistat::Key do
     @key.date = @date
     @key.date.to_time.to_s.should == @date.to_s
     # label
-    @key.label.should == @label
+    @key.label.to_s.should == @label
     @key.label_hash == @label_hash
     @label = "contact_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
     @key.label = @label
-    @key.label.should == @label
+    @key.label.to_s.should == @label
     @key.label_hash == @label_hash
   end
   
-  it "should create a group of keys from label group" do
-    label = 'message/public/offensive'
-    result = [ "message/public/offensive",
-               "message/public",
-               "message" ]
+  describe "Grouping" do
+    before(:each) do
+      @label = "message/public/offensive"
+      @key = Redistat::Key.new(@scope, @label, @date, {:depth => :hour})
+    end
     
-    key = Redistat::Key.new(@scope, label, @date, {:depth => :hour})
+    it "should create a group of keys from label group" do
+      label = 'message/public/offensive'
+      result = [ "message/public/offensive",
+                 "message/public",
+                 "message" ]
+
+      key = Redistat::Key.new(@scope, label, @date, {:depth => :hour})
+
+      key.groups.map { |k| k.label.to_s }.should == result
+    end
     
-    key.label_groups.should == result
-    key.groups.map { |k| k.label }.should == result
+    it "should know it's parent" do
+      @key.parent.should be_a(Redistat::Key)
+      @key.parent.label.to_s.should == 'message/public'
+      Redistat::Key.new(@scope, 'hello', @date).parent.should be_nil
+    end
+    
+    it "should update label index and return children" do
+      db.smembers("#{@scope}#{Redistat::LABEL_INDEX}#{@key.label.parent}").should == []
+      @key.children.should have(0).items
+      
+      @key.update_index                                                  # indexing 'message/publish/offensive'
+      Redistat::Key.new("PageViews", "message/public/die").update_index  # indexing 'message/publish/die'
+      Redistat::Key.new("PageViews", "message/public/live").update_index # indexing 'message/publish/live'
+      
+      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}#{@key.label.parent}") # checking 'message/public'
+      members.should have(3).item
+      members.should include('offensive')
+      members.should include('live')
+      members.should include('die')
+      
+      key = @key.parent
+      key.children.first.should be_a(Redistat::Key)
+      key.children.should have(3).item
+      key.children.map { |k| k.label.me }.should == members
+      
+      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}#{key.label.parent}") # checking 'message'
+      members.should have(1).item
+      members.should include('public')
+      
+      key = key.parent
+      key.children.should have(1).item
+      key.children.map { |k| k.label.me }.should == members
+      
+      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}#{key.label.parent}") # checking ''
+      members.should have(0).item
+      
+      key.parent.should be_nil
+    end
   end
   
 end

@@ -25,24 +25,34 @@ describe Redistat::Label do
     db.get("#{Redistat::KEY_LEBELS}#{label.hash}").should == name
   end
   
-  it "should separate label names into groups" do
-    name = "message/public/offensive"
-    label = Redistat::Label.new(name)
-    label.name.should == name
-    label.groups.should == [ "message/public/offensive",
-                             "message/public",
-                             "message" ]
+  describe "Grouping" do
+    before(:each) do
+      @name = "message/public/offensive"
+      @label = Redistat::Label.new(@name)
+    end
+    
+    it "should know it's parent label group" do
+      @label.parent.to_s.should == 'message/public'
+      Redistat::Label.new('hello').parent.should be_nil
+    end
+    
+    it "should separate label names into groups" do
+      @label.name.should == @name
+      @label.groups.map { |l| l.to_s }.should == [ "message/public/offensive",
+                                                   "message/public",
+                                                   "message" ]
 
-    name = "/message/public/"
-    label = Redistat::Label.new(name)
-    label.name.should == name
-    label.groups.should == [ "message/public",
-                             "message" ]
+      @name = "/message/public/"
+      @label = Redistat::Label.new(@name)
+      @label.name.should == @name
+      @label.groups.map { |l| l.to_s }.should == [ "message/public",
+                                                   "message" ]
 
-    name = "message"
-    label = Redistat::Label.new(name)
-    label.name.should == name
-    label.groups.should == [ "message" ]
+      @name = "message"
+      @label = Redistat::Label.new(@name)
+      @label.name.should == @name
+      @label.groups.map { |l| l.to_s }.should == [ "message" ]
+    end
   end
   
 end
