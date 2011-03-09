@@ -45,4 +45,10 @@ describe Redistat::Label do
     label.groups.should == [ "message" ]
   end
   
+  it "should know it's parent label group" do
+    name = "message/public/offensive"
+    label = Redistat::Label.new(name)
+    label.parent_group.should == 'message/public'
+  end
+  
 end

@@ -73,4 +73,10 @@ describe Redistat::Key do
     key.groups.map { |k| k.label }.should == result
   end
   
+  it "should know it's parent label group" do
+    label = 'message/public/offensive'
+    key = Redistat::Key.new(@scope, label, @date, {:depth => :hour})
+    key.parent_group.should == 'message/public'
+  end
+  
 end

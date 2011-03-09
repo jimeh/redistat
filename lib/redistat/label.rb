@@ -49,5 +49,9 @@ module Redistat
       @groups.reverse!
     end
     
+    def parent_group
+      groups[-2]
+    end
+    
   end
 end
