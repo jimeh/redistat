@@ -32,50 +32,26 @@ describe Redistat::Label do
     end
     
     it "should know it's parent label group" do
-      @label.parent_group.should == 'message/public'
-      Redistat::Label.new('hello').parent_group.should be_nil
+      @label.parent.to_s.should == 'message/public'
+      Redistat::Label.new('hello').parent.should be_nil
     end
     
     it "should separate label names into groups" do
       @label.name.should == @name
-      @label.groups.should == [ "message/public/offensive",
-                                "message/public",
-                                "message" ]
+      @label.groups.map { |l| l.to_s }.should == [ "message/public/offensive",
+                                                   "message/public",
+                                                   "message" ]
 
       @name = "/message/public/"
       @label = Redistat::Label.new(@name)
       @label.name.should == @name
-      @label.groups.should == [ "message/public",
-                                "message" ]
+      @label.groups.map { |l| l.to_s }.should == [ "message/public",
+                                                   "message" ]
 
       @name = "message"
       @label = Redistat::Label.new(@name)
       @label.name.should == @name
-      @label.groups.should == [ "message" ]
-    end
-
-    it "should update label index" do
-      db.smembers("#{Redistat::LABEL_INDEX}#{@label.parent_group}").should == []
-      @label.update_index
-      members = db.smembers("#{Redistat::LABEL_INDEX}#{@label.parent_group}") # checking 'message/public'
-      members.should have(1).item
-      members.should include('offensive')
-      members.should == @label.sub_labels.map { |l| l.group }
-
-      name = "message/public/nice"
-      label = Redistat::Label.new(name)
-      label.update_index
-      members = db.smembers("#{Redistat::LABEL_INDEX}#{label.parent_group}") # checking 'message/public'
-      members.should have(2).items
-      members.should include('offensive')
-      members.should include('nice')
-      members.should == label.sub_labels.map { |l| l.group }
-      
-      label = @label.parent
-      members = db.smembers("#{Redistat::LABEL_INDEX}#{label.parent_group}") # checking 'message'
-      members.should have(1).item
-      members.should include('public')
-      members.should == label.sub_labels.map { |l| l.group }
+      @label.groups.map { |l| l.to_s }.should == [ "message" ]
     end
   end
   

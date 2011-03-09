@@ -1,7 +1,7 @@
 module Redistat
   class Key
+    include Redistat::Database
     
-    attr_accessor :date
     attr_accessor :options
     
     def initialize(scope, label_name = nil, time_stamp = nil, options = {})
@@ -17,7 +17,7 @@ module Redistat
     
     def prefix
       key = "#{@scope}"
-      key << "/#{label}" if !label.nil?
+      key << "/#{label.name}" if !label.nil?
       key << ":"
       key
     end
@@ -25,25 +25,10 @@ module Redistat
     def date=(input)
       @date = (input.instance_of?(Redistat::Date)) ? input : Date.new(input) # Redistat::Date, not ::Date
     end
+    attr_reader :date
     
     def depth
       @options[:depth]
-    end
-    
-    def label
-      @label.name
-    end
-    
-    def label=(input)
-      @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
-    end
-    
-    def label_hash
-      @label.hash
-    end
-    
-    def label_groups
-      @label.groups
     end
     
     def scope
@@ -54,18 +39,36 @@ module Redistat
       @scope = (input.instance_of?(Redistat::Scope)) ? input : Scope.new(input)
     end
     
-    def groups
-      @groups ||= label_groups.map do |label_name|
-        self.class.new(@scope, label_name, self.date, @options)
+    def label=(input)
+      @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
+    end
+    attr_reader :label
+    
+    def label_hash
+      @label.hash
+    end
+    
+    def parent
+      @parent ||= self.class.new(self.scope, @label.parent, self.date, @options) unless @label.parent.nil?
+    end
+    
+    def children
+      db.smembers("#{scope}#{LABEL_INDEX}#{@label}").map { |member|
+        self.class.new(self.scope, "#{@label}#{GROUP_SEPARATOR}#{member}", self.date, @options)
+      }
+    end
+    
+    def update_index
+      @label.groups.each do |label|
+        break if label.parent.nil?
+        db.sadd("#{scope}#{LABEL_INDEX}#{label.parent}", label.me)
       end
     end
     
-    def parent_group
-      @label.parent_group
-    end
-    
-    def update_label_index
-      @label.update_index
+    def groups # TODO: Is this useless?
+      @groups ||= @label.groups.map do |label|
+        self.class.new(@scope, label, self.date, @options)
+      end
     end
     
     def to_s(depth = nil)

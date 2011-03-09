@@ -83,8 +83,8 @@ describe Redistat::Summary do
     key = Redistat::Key.new(@scope, label, @date)
     Redistat::Summary.update_all(key, stats, :hour)
 
-    key.groups[0].label.should == "views/about_us"
-    key.groups[1].label.should == "views"
+    key.groups[0].label.to_s.should == "views/about_us"
+    key.groups[1].label.to_s.should == "views"
     child1 = key.groups[0]
     parent = key.groups[1]
     
@@ -92,8 +92,8 @@ describe Redistat::Summary do
     key = Redistat::Key.new(@scope, label, @date)
     Redistat::Summary.update_all(key, stats, :hour)
     
-    key.groups[0].label.should == "views/contact"
-    key.groups[1].label.should == "views"
+    key.groups[0].label.to_s.should == "views/contact"
+    key.groups[1].label.to_s.should == "views"
     child2 = key.groups[0]
     
     summary = db.hgetall(child1.to_s(:hour))

@@ -40,8 +40,12 @@ module Redistat
     
     attr_reader :options
     
-    def initialize(options = {})
-      @options = options
+    def initialize(opts = {})
+      set_options(opts)
+    end
+    
+    def options
+      @options ||= {}
     end
     
     def all(reload = false)
@@ -65,21 +69,27 @@ module Redistat
       all.each_with_index(&block)
     end
     
+    def children
+      build_key.children.map { |key|
+        self.class.new(options.merge(:label => key.label.to_s))
+      }
+    end
+    
     def connection_ref(ref)
-      reset! if @options[:connection_ref] != ref
-      @options[:connection_ref] = ref
+      reset! if options[:connection_ref] != ref
+      options[:connection_ref] = ref
       self
     end
     
     def scope(scope)
-      reset! if @options[:scope].to_s != scope
-      @options[:scope] = Scope.new(scope)
+      reset! if !options[:scope].nil? && options[:scope].to_s != scope
+      options[:scope] = Scope.new(scope)
       self
     end
     
     def label(label)
-      reset! if @options[:label].raw != label
-      @options[:label] = Label.new(label)
+      reset! if !options[:label].nil? && options[:label].to_s != label
+      options[:label] = Label.new(label)
       self
     end
     
@@ -89,34 +99,34 @@ module Redistat
     alias :date :dates
     
     def from(date)
-      reset! if @options[:from] != date
-      @options[:from] = date
+      reset! if options[:from] != date
+      options[:from] = date
       self
     end
     
     def till(date)
-      reset! if @options[:till] != date
-      @options[:till] = date
+      reset! if options[:till] != date
+      options[:till] = date
       self
     end
     alias :until :till
     
     def depth(unit)
-      reset! if @options[:depth] != unit
-      @options[:depth] = unit
+      reset! if options[:depth] != unit
+      options[:depth] = unit
       self
     end
     
     def interval(unit)
-      reset! if @options[:interval] != unit
-      @options[:interval] = unit
+      reset! if options[:interval] != unit
+      options[:interval] = unit
       self
     end
     
-    def find(options = {})
-      set_options(options)
+    def find(opts = {})
+      set_options(opts)
       raise InvalidOptions.new if !valid_options?
-      if @options[:interval].nil? || !@options[:interval]
+      if options[:interval].nil? || !options[:interval]
         find_by_magic
       else
         find_by_interval
@@ -130,14 +140,14 @@ module Redistat
       opts.each do |key, value|
         self.send(key, opts.delete(key)) if self.respond_to?(key)
       end
-      @options.merge!(opts)
+      self.options.merge!(opts)
     end
     
-    def find_by_interval(options = {})
+    def find_by_interval
       raise InvalidOptions.new if !valid_options?
       key = build_key
-      col = Collection.new(@options)
-      col.total = Result.new(@options)
+      col = Collection.new(options)
+      col.total = Result.new(options)
       build_date_sets.each do |set|
         set[:add].each do |date|
           result = Result.new
@@ -152,11 +162,11 @@ module Redistat
       col
     end
     
-    def find_by_magic(options = {})
+    def find_by_magic
       raise InvalidOptions.new if !valid_options?
       key = build_key
-      col = Collection.new(@options)
-      col.total = Result.new(@options)
+      col = Collection.new(options)
+      col.total = Result.new(options)
       col << col.total
       build_date_sets.each do |set|
         sum = Result.new
@@ -174,16 +184,16 @@ module Redistat
     end
     
     def valid_options?
-      return true if !@options[:scope].blank? && !@options[:label].blank? && !@options[:from].blank? && !@options[:till].blank?
+      return true if !options[:scope].blank? && !options[:label].blank? && !options[:from].blank? && !options[:till].blank?
       false
     end
     
     def build_date_sets
-      Finder::DateSet.new(@options[:from], @options[:till], @options[:depth], @options[:interval])
+      Finder::DateSet.new(options[:from], options[:till], options[:depth], options[:interval])
     end
     
     def build_key
-      Key.new(@options[:scope], @options[:label])
+      Key.new(options[:scope], options[:label])
     end
     
     def summarize_add_keys(sets, key, sum)
@@ -205,7 +215,7 @@ module Redistat
     end
     
     def db
-      super(@options[:connection_ref])
+      super(options[:connection_ref])
     end
     
   end

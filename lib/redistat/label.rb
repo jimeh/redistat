@@ -2,7 +2,6 @@ module Redistat
   class Label
     include Database
     
-    attr_reader :raw
     attr_reader :connection_ref
     
     def self.create(name, options = {})
@@ -13,22 +12,25 @@ module Redistat
       @options = options
       @raw = str.to_s
     end
+    
+    def to_s
+      @raw
+    end
 
     def db
       super(@options[:connection_ref])
     end
     
     def name
-      @options[:hashed_label] ? hash : @raw
+      @options[:hashed_label] ? hash : self.to_s
     end
     
     def hash
-      @hash ||= Digest::SHA1.hexdigest(@raw)
+      @hash ||= Digest::SHA1.hexdigest(self.to_s)
     end
     
     def save
-      @saved = (db.set("#{KEY_LEBELS}#{hash}", @raw) == "OK") if @options[:hashed_label]
-      update_index if groups.size > 1 # TODO: add a label_indexing option
+      @saved = (db.set("#{KEY_LEBELS}#{hash}", self.to_s) == "OK") if @options[:hashed_label]
       self
     end
     
@@ -37,43 +39,25 @@ module Redistat
     end
     
     def parent
-      @parent ||= self.class.new(parent_group)
+      @parent ||= groups[1] if groups.size > 1
     end
     
-    def parent_group
-      groups[1]
-    end
-    
-    def group
-      @raw.split(GROUP_SEPARATOR).last
+    def me
+      self.to_s.split(GROUP_SEPARATOR).last
     end
     
     def groups
-      return @groups if @groups
+      return @groups unless @groups.nil?
       @groups = []
       parent = ""
-      @raw.split(GROUP_SEPARATOR).each do |part|
+      self.to_s.split(GROUP_SEPARATOR).each do |part|
         if !part.blank?
-          group = ((parent.blank?) ? "" : "#{parent}/") + part
-          @groups << group
+          group = ((parent.blank?) ? "" : "#{parent}#{GROUP_SEPARATOR}") + part
+          @groups << Label.new(group)
           parent = group
         end
       end
       @groups.reverse!
-    end
-    
-    def sub_labels
-      db.smembers("#{LABEL_INDEX}#{parent_group}").map { |member|
-        self.class.new("#{parent_group}#{GROUP_SEPARATOR}#{member}")
-      }
-    end
-    
-    def update_index
-      groups.each do |group|
-        label = self.class.new(group)
-        break if label.parent_group.nil?
-        db.sadd("#{LABEL_INDEX}#{label.parent_group}", label.group) == "OK" ? true : false
-      end
     end
     
   end

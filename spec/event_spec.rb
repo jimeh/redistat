@@ -18,7 +18,7 @@ describe Redistat::Event do
   it "should initialize properly" do
     @event.id.should be_nil
     @event.scope.should == @scope
-    @event.label.should == @label
+    @event.label.to_s.should == @label
     @event.label_hash.should == @label_hash
     @event.date.to_time.to_s.should == @date.to_s
     @event.stats.should == @stats
@@ -33,12 +33,12 @@ describe Redistat::Event do
     @event.date = @date
     @event.date.to_time.to_s.should == @date.to_s
     # label
-    @event.label.should == @label
+    @event.label.to_s.should == @label
     @event.label_hash.should == @label_hash
     @label = "contact_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
     @event.label = @label
-    @event.label.should == @label
+    @event.label.to_s.should == @label
     @event.label_hash.should == @label_hash
   end
   
@@ -64,7 +64,7 @@ describe Redistat::Event do
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta).save
     fetched = Redistat::Event.find(@scope, @event.id)
     @event.scope.should == fetched.scope
-    @event.label.should == fetched.label
+    @event.label.to_s.should == fetched.label.to_s
     @event.date.to_s.should == fetched.date.to_s
   end
   
