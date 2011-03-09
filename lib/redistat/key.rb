@@ -1,13 +1,12 @@
 module Redistat
   class Key
     
-    attr_accessor :scope
     attr_accessor :date
     attr_accessor :options
     
     def initialize(scope, label_name = nil, time_stamp = nil, options = {})
       @options = default_options.merge(options || {})
-      @scope = scope
+      self.scope = scope
       self.label = label_name if !label_name.nil?
       self.date = time_stamp ||= Time.now
     end
@@ -35,6 +34,10 @@ module Redistat
       @label.name
     end
     
+    def label=(input)
+      @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
+    end
+    
     def label_hash
       @label.hash
     end
@@ -43,8 +46,12 @@ module Redistat
       @label.groups
     end
     
-    def label=(input)
-      @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
+    def scope
+      @scope.to_s
+    end
+    
+    def scope=(input)
+      @scope = (input.instance_of?(Redistat::Scope)) ? input : Scope.new(input)
     end
     
     def groups

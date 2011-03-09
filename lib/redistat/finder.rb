@@ -72,14 +72,14 @@ module Redistat
     end
     
     def scope(scope)
-      reset! if @options[:scope] != scope
-      @options[:scope] = scope
+      reset! if @options[:scope].to_s != scope
+      @options[:scope] = Scope.new(scope)
       self
     end
     
     def label(label)
-      reset! if @options[:label] != label
-      @options[:label] = label
+      reset! if @options[:label].raw != label
+      @options[:label] = Label.new(label)
       self
     end
     
