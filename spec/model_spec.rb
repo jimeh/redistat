@@ -125,7 +125,7 @@ describe Redistat::Model do
     ModelHelper3.store("sheep.black", {:count => 6, :weight => 461}, @time.hours_ago(4))
     ModelHelper3.store("sheep.black", {:count => 2, :weight => 156}, @time)
     
-    db.keys("*").should be_empty
+    db.keys("*").should be_empty # FIXME: index_labels option needs to be added, and enabled here
     ModelHelper1.redis.keys("*").should be_empty
     db("ModelHelper3").keys("*").should have(5).items
     ModelHelper3.redis.keys("*").should have(5).items
