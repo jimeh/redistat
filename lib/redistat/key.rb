@@ -54,14 +54,16 @@ module Redistat
     
     def children
       db.smembers("#{scope}#{LABEL_INDEX}#{@label}").map { |member|
-        self.class.new(self.scope, "#{@label}#{GROUP_SEPARATOR}#{member}", self.date, @options)
+        child_label = [@label, member].reject { |i| i.nil? }
+        self.class.new(self.scope, child_label.join(GROUP_SEPARATOR), self.date, @options)
       }
     end
     
     def update_index
       @label.groups.each do |label|
-        break if label.parent.nil?
-        db.sadd("#{scope}#{LABEL_INDEX}#{label.parent}", label.me)
+        # break if label.parent.nil?
+        parent = (label.parent || "")
+        db.sadd("#{scope}#{LABEL_INDEX}#{parent}", label.me)
       end
     end
     

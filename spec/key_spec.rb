@@ -113,10 +113,14 @@ describe Redistat::Key do
       key.children.should have(1).item
       key.children.map { |k| k.label.me }.should == members
       
-      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}#{key.label.parent}") # checking ''
-      members.should have(0).item
+      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}") # checking ''
+      members.should have(1).item
+      members.should include('message')
       
       key.parent.should be_nil
+      key = Redistat::Key.new("PageViews")
+      key.children.should have(1).item
+      key.children.map { |k| k.label.me }.should include('message')
     end
   end
   
