@@ -6,30 +6,35 @@ module Redistat
       base.extend(self)
     end
     
+    #
+    # statistics store/fetch methods
+    # 
+    
     def store(label, stats = {}, date = nil, meta = {}, opts = {})
       Event.new(name, label, date, stats, options.merge(opts), meta).save
     end
     alias :event :store
+
+    def fetch(label, from, till, opts = {})
+      find(label, from, till, opts).all
+    end
+    alias :lookup :fetch
+
+    def find(label, from, till, opts = {})
+      Finder.new( { :scope => name,
+                    :label => label,
+                    :from  => from,
+                    :till  => till }.merge(options.merge(opts)) )
+    end
+    
+    #
+    # options methods
+    #
     
     def connect_to(opts = {})
       Connection.create(opts.merge(:ref => name))
       options[:connection_ref] = name
     end
-    
-    def connection
-      db(options[:connection_ref])
-    end
-    alias :redis :connection
-    
-    def fetch(label, from, till, opts = {})
-      Finder.find({
-        :scope => name,
-        :label => label,
-        :from  => from,
-        :till  => till
-      }.merge(options.merge(opts)))
-    end
-    alias :lookup :fetch
     
     def hashed_label(boolean = nil)
       if !boolean.nil?
@@ -64,15 +69,22 @@ module Redistat
       end
     end
     
+    #
+    # resource access methods
+    #
+    
+    def connection
+      db(options[:connection_ref])
+    end
+    alias :redis :connection
+    
     def options
       @options ||= {}
     end
     
-    private
-    
     def name
       options[:class_name] || (@name ||= self.to_s)
     end
-    
+      
   end
 end
