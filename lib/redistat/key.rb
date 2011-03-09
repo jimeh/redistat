@@ -57,6 +57,10 @@ module Redistat
       @label.parent_group
     end
     
+    def update_label_index
+      @label.update_index
+    end
+    
     def to_s(depth = nil)
       depth ||= @options[:depth]
       key = self.prefix

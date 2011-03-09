@@ -49,8 +49,24 @@ module Redistat
       @groups.reverse!
     end
     
+    def parent
+      @parent ||= self.class.new(parent_group)
+    end
+    
     def parent_group
-      groups[-2]
+      groups[1]
+    end
+    
+    def sub_group
+      @raw.split(GROUP_SEPARATOR).last
+    end
+    
+    def update_index
+      groups.each do |group|
+        label = self.class.new(group)
+        break if label.parent_group.nil?
+        db.sadd("#{LABEL_INDEX}#{label.parent_group}", label.sub_group) == "OK" ? true : false
+      end
     end
     
   end

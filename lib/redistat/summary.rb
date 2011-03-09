@@ -13,6 +13,7 @@ module Redistat
         stats = inject_group_summaries(stats)
         key.groups.each { |k|
           update_key(k, stats, depth_limit, connection_ref)
+          k.update_label_index # TODO: add a label_indexing option
         }
       else
         update_key(key, stats, depth_limit, connection_ref)
