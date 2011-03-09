@@ -154,7 +154,7 @@ module Redistat
     
     def find_by_magic(options = {})
       raise InvalidOptions.new if !valid_options?
-      key = Key.new(@options[:scope], @options[:label])
+      key = build_key
       col = Collection.new(@options)
       col.total = Result.new(@options)
       col << col.total
