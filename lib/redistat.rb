@@ -34,7 +34,7 @@ module Redistat
   
   KEY_NEXT_ID = ".next_id"
   KEY_EVENT = ".event:"
-  KEY_LEBELS = "Redistat.lables:"
+  KEY_LEBELS = "Redistat.lables:" # TODO: Fix this typo, at some point. Might brack backwards compatability ^_^
   KEY_EVENT_IDS = ".event_ids"
   LABEL_INDEX = ".label_index:"
   GROUP_SEPARATOR = "/"
