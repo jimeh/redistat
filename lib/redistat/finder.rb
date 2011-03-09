@@ -49,6 +49,10 @@ module Redistat
       @result ||= find
     end
     
+    def total
+      all.total
+    end
+    
     def each(&block)
       all.each(&block)
     end
@@ -59,10 +63,6 @@ module Redistat
     
     def each_with_index(&block)
       all.each_with_index(&block)
-    end
-    
-    def reset!
-      @result = nil
     end
     
     def connection_ref(ref)
@@ -168,9 +168,9 @@ module Redistat
       end
       col
     end
-    
-    def db
-      super(@options[:connection_ref])
+
+    def reset!
+      @result = nil
     end
     
     def valid_options?
@@ -202,6 +202,10 @@ module Redistat
         end
       end
       sum
+    end
+    
+    def db
+      super(@options[:connection_ref])
     end
     
   end
