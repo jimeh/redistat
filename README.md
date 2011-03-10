@@ -66,6 +66,11 @@ When retrieving statistics for a given date range, Redistat figures out how to d
 * Anything else that becomes apparent after real-world use.
 
 
+## Credits
+
+[Global Personals](http://globalpersonals.co.uk/) deserves a thank you. Currently the primary user of Redistat, they've allowed me to spend some company time to further develop the project.
+
+
 ## Note on Patches/Pull Requests
  
 * Fork the project.
