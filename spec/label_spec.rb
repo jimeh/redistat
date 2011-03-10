@@ -17,12 +17,12 @@ describe Redistat::Label do
   it "should store a label hash lookup key" do
     label = Redistat::Label.new(@name, {:hashed_label => true}).save
     label.saved?.should be_true
-    db.hget(Redistat::KEY_LEBELS, label.hash).should == @name
+    db.hget(Redistat::KEY_LABELS, label.hash).should == @name
     
     name = "contact_us"
     label = Redistat::Label.create(name, {:hashed_label => true})
     label.saved?.should be_true
-    db.hget(Redistat::KEY_LEBELS, label.hash).should == name
+    db.hget(Redistat::KEY_LABELS, label.hash).should == name
   end
   
   describe "Grouping" do
