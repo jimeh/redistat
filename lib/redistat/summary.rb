@@ -2,20 +2,28 @@ module Redistat
   class Summary
     include Database
     
-    def self.update_all(key, stats = {}, depth_limit = nil, connection_ref = nil, enable_grouping = nil)
+    def self.default_options
+      { :enable_grouping => true,
+        :label_indexing => true,
+        :connection_ref => nil }
+    end
+    
+    def self.update_all(key, stats = {}, depth_limit = nil, opts = {})
       stats ||= {}
       return nil if stats.size == 0
       
-      depth_limit ||= key.depth
-      enable_grouping = true if enable_grouping.nil?
+      options = default_options.merge((opts || {}).reject { |k,v| v.nil? })
       
-      if enable_grouping
+      depth_limit ||= key.depth
+      
+      if options[:enable_grouping]
         stats = inject_group_summaries(stats)
         key.groups.each { |k|
-          update_key(k, stats, depth_limit, connection_ref)
+          update_key(k, stats, depth_limit, options[:connection_ref])
+          k.update_index if options[:label_indexing]
         }
       else
-        update_key(key, stats, depth_limit, connection_ref)
+        update_key(key, stats, depth_limit, options[:connection_ref])
       end
     end
     

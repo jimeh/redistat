@@ -69,7 +69,7 @@ describe Redistat::Summary do
   
   it "should not store key group summaries when option is disabled" do
     stats = {"views" => 3, "visitors/eu" => 2, "visitors/us" => 4}
-    Redistat::Summary.update_all(@key, stats, :hour, nil, false)
+    Redistat::Summary.update_all(@key, stats, :hour, {:enable_grouping => false})
     summary = db.hgetall(@key.to_s(:hour))
     summary.should have(3).items
     summary["views"].should == "3"
@@ -83,8 +83,8 @@ describe Redistat::Summary do
     key = Redistat::Key.new(@scope, label, @date)
     Redistat::Summary.update_all(key, stats, :hour)
 
-    key.groups[0].label.should == "views/about_us"
-    key.groups[1].label.should == "views"
+    key.groups[0].label.to_s.should == "views/about_us"
+    key.groups[1].label.to_s.should == "views"
     child1 = key.groups[0]
     parent = key.groups[1]
     
@@ -92,8 +92,8 @@ describe Redistat::Summary do
     key = Redistat::Key.new(@scope, label, @date)
     Redistat::Summary.update_all(key, stats, :hour)
     
-    key.groups[0].label.should == "views/contact"
-    key.groups[1].label.should == "views"
+    key.groups[0].label.to_s.should == "views/contact"
+    key.groups[1].label.to_s.should == "views"
     child2 = key.groups[0]
     
     summary = db.hgetall(child1.to_s(:hour))

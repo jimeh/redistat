@@ -1,40 +1,28 @@
 module Redistat
   class Event
     include Database
+    include Options
     
     attr_reader :id
     attr_reader :key
-    attr_reader :connection_ref
     
     attr_accessor :stats
     attr_accessor :meta
-    attr_accessor :options
     
-    def initialize(scope, label = nil, date = nil, stats = {}, options = {}, meta = {}, is_new = true)
-      @options = parse_options(options)
-      @connection_ref = @options[:connection_ref]
-      @key = Key.new(scope, label, date, @options)
-      @stats = stats ||= {}
-      @meta = meta ||= {}
-      @new = is_new
-    end
-    
-    def db
-      super(@connection_ref)
-    end
-    
-    def parse_options(options)
-      default_options.each do |opt, val|
-        options[opt] = val if options[opt].nil?
-      end
-      options
-    end
-
     def default_options
       { :depth => :hour,
         :store_event => false,
         :connection_ref => nil,
-        :enable_grouping => true }
+        :enable_grouping => true,
+        :label_indexing => true }
+    end
+    
+    def initialize(scope, label = nil, date = nil, stats = {}, opts = {}, meta = {}, is_new = true)
+      parse_options(opts)
+      @key = Key.new(scope, label, date, @options)
+      @stats = stats ||= {}
+      @meta = meta ||= {}
+      @new = is_new
     end
     
     def new?
@@ -75,7 +63,7 @@ module Redistat
     
     def save
       return false if !self.new?
-      Summary.update_all(@key, @stats, depth_limit, @connection_ref, @options[:enable_grouping])
+      Summary.update_all(@key, @stats, depth_limit, @options)
       if @options[:store_event]
         @id = self.next_id
         db.hmset("#{self.scope}#{KEY_EVENT}#{@id}",

@@ -1,24 +1,22 @@
 module Redistat
   class Key
+    include Database
+    include Options
     
-    attr_accessor :scope
-    attr_accessor :date
-    attr_accessor :options
+    def default_options
+      { :depth => :hour }
+    end
     
-    def initialize(scope, label_name = nil, time_stamp = nil, options = {})
-      @options = default_options.merge(options || {})
-      @scope = scope
+    def initialize(scope, label_name = nil, time_stamp = nil, opts = {})
+      parse_options(opts)
+      self.scope = scope
       self.label = label_name if !label_name.nil?
       self.date = time_stamp ||= Time.now
     end
     
-    def default_options
-      { :depth => :hour, :hashed_label => false }
-    end
-    
     def prefix
       key = "#{@scope}"
-      key << "/#{label}" if !label.nil?
+      key << "/#{label.name}" if !label.nil?
       key << ":"
       key
     end
@@ -26,30 +24,51 @@ module Redistat
     def date=(input)
       @date = (input.instance_of?(Redistat::Date)) ? input : Date.new(input) # Redistat::Date, not ::Date
     end
+    attr_reader :date
     
     def depth
-      @options[:depth]
+      options[:depth]
     end
     
-    def label
-      @label.name
+    def scope
+      @scope.to_s
     end
     
-    def label_hash
-      @label.hash
-    end
-    
-    def label_groups
-      @label.groups
+    def scope=(input)
+      @scope = (input.instance_of?(Redistat::Scope)) ? input : Scope.new(input)
     end
     
     def label=(input)
       @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)
     end
+    attr_reader :label
     
-    def groups
-      @groups ||= label_groups.map do |label_name|
-        self.class.new(@scope, label_name, self.date, @options)
+    def label_hash
+      @label.hash
+    end
+    
+    def parent
+      @parent ||= self.class.new(self.scope, @label.parent, self.date, @options) unless @label.parent.nil?
+    end
+    
+    def children
+      db.smembers("#{scope}#{LABEL_INDEX}#{@label}").map { |member|
+        child_label = [@label, member].reject { |i| i.nil? }
+        self.class.new(self.scope, child_label.join(GROUP_SEPARATOR), self.date, @options)
+      }
+    end
+    
+    def update_index
+      @label.groups.each do |label|
+        # break if label.parent.nil?
+        parent = (label.parent || "")
+        db.sadd("#{scope}#{LABEL_INDEX}#{parent}", label.me)
+      end
+    end
+    
+    def groups # TODO: Is this useless?
+      @groups ||= @label.groups.map do |label|
+        self.class.new(@scope, label, self.date, @options)
       end
     end
     

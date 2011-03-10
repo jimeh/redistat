@@ -4,6 +4,7 @@ module Redistat
       base.extend(Database)
     end
     def db(ref = nil)
+      ref ||= @options[:connection_ref] if !@options.nil?
       Redistat.connection(ref)
     end
   end

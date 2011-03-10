@@ -9,9 +9,10 @@ require 'time_ext'
 require 'json'
 require 'digest/sha1'
 
-require 'redistat/collection'
+require 'redistat/options'
 require 'redistat/connection'
 require 'redistat/database'
+require 'redistat/collection'
 require 'redistat/date'
 require 'redistat/date_helper'
 require 'redistat/event'
@@ -34,8 +35,9 @@ module Redistat
   
   KEY_NEXT_ID = ".next_id"
   KEY_EVENT = ".event:"
-  KEY_LEBELS = "Redistat.lables:"
+  KEY_LEBELS = "Redistat.labels:" # used for reverse label hash lookup
   KEY_EVENT_IDS = ".event_ids"
+  LABEL_INDEX = ".label_index:"
   GROUP_SEPARATOR = "/"
   
   class InvalidOptions < ArgumentError; end

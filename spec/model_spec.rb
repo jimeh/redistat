@@ -22,8 +22,8 @@ describe Redistat::Model do
     one_hour_ago  = 1.hour.ago
     finder = ModelHelper1.find('label', two_hours_ago, one_hour_ago)
     finder.should be_a(Redistat::Finder)
-    finder.options[:scope].should == 'ModelHelper1'
-    finder.options[:label].should == 'label'
+    finder.options[:scope].to_s.should == 'ModelHelper1'
+    finder.options[:label].to_s.should == 'label'
     finder.options[:from].should  == two_hours_ago
     finder.options[:till].should  == one_hour_ago
   end
@@ -82,34 +82,71 @@ describe Redistat::Model do
     stats.first.should == stats.total
   end
   
+  it "should store and fetch grouping enabled stats" do
+    ModelHelper1.store("sheep/black", {:count => 6, :weight => 461}, @time.hours_ago(4))
+    ModelHelper1.store("sheep/black", {:count => 2, :weight => 156}, @time)
+    ModelHelper1.store("sheep/white", {:count => 5, :weight => 393}, @time.hours_ago(4))
+    ModelHelper1.store("sheep/white", {:count => 4, :weight => 316}, @time)
+    
+    stats = ModelHelper1.fetch("sheep/black", @time.hours_ago(2), @time.hours_since(1))
+    stats.total["count"].should == 2
+    stats.total["weight"].should == 156
+    stats.first.should == stats.total
+    
+    stats = ModelHelper1.fetch("sheep/black", @time.hours_ago(5), @time.hours_since(1))
+    stats.total[:count].should == 8
+    stats.total[:weight].should == 617
+    stats.first.should == stats.total
+    
+    stats = ModelHelper1.fetch("sheep/white", @time.hours_ago(2), @time.hours_since(1))
+    stats.total[:count].should == 4
+    stats.total[:weight].should == 316
+    stats.first.should == stats.total
+    
+    stats = ModelHelper1.fetch("sheep/white", @time.hours_ago(5), @time.hours_since(1))
+    stats.total[:count].should == 9
+    stats.total[:weight].should == 709
+    stats.first.should == stats.total
+    
+    stats = ModelHelper1.fetch("sheep", @time.hours_ago(2), @time.hours_since(1))
+    stats.total[:count].should == 6
+    stats.total[:weight].should == 472
+    stats.first.should == stats.total
+    
+    stats = ModelHelper1.fetch("sheep", @time.hours_ago(5), @time.hours_since(1))
+    stats.total[:count].should == 17
+    stats.total[:weight].should == 1326
+    stats.first.should == stats.total
+  end
+  
   it "should connect to different Redis servers on a per-model basis" do
     ModelHelper3.redis.client.db.should == 14
     
-    ModelHelper3.store("sheep.black", {:count => 6, :weight => 461}, @time.hours_ago(4))
-    ModelHelper3.store("sheep.black", {:count => 2, :weight => 156}, @time)
+    ModelHelper3.store("sheep.black", {:count => 6, :weight => 461}, @time.hours_ago(4), :label_indexing => false)
+    ModelHelper3.store("sheep.black", {:count => 2, :weight => 156}, @time, :label_indexing => false)
     
     db.keys("*").should be_empty
     ModelHelper1.redis.keys("*").should be_empty
     db("ModelHelper3").keys("*").should have(5).items
     ModelHelper3.redis.keys("*").should have(5).items
     
-    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(2), @time.hours_since(1))
+    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(2), @time.hours_since(1), :label_indexing => false)
     stats.total["count"].should == 2
     stats.total["weight"].should == 156
-    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1))
+    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1), :label_indexing => false)
     stats.total[:count].should == 8
     stats.total[:weight].should == 617
     
     ModelHelper3.connect_to(:port => 8379, :db => 13)
     ModelHelper3.redis.client.db.should == 13
     
-    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1))
+    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1), :label_indexing => false)
     stats.total.should == {}
     
     ModelHelper3.connect_to(:port => 8379, :db => 14)
     ModelHelper3.redis.client.db.should == 14
     
-    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1))
+    stats = ModelHelper3.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1), :label_indexing => false)
     stats.total[:count].should == 8
     stats.total[:weight].should == 617
   end
