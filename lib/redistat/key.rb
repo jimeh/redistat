@@ -1,18 +1,17 @@
 module Redistat
   class Key
-    include Redistat::Database
+    include Database
+    include Options
     
-    attr_accessor :options
+    def default_options
+      { :depth => :hour }
+    end
     
-    def initialize(scope, label_name = nil, time_stamp = nil, options = {})
-      @options = default_options.merge(options || {})
+    def initialize(scope, label_name = nil, time_stamp = nil, opts = {})
+      parse_options(opts)
       self.scope = scope
       self.label = label_name if !label_name.nil?
       self.date = time_stamp ||= Time.now
-    end
-    
-    def default_options
-      { :depth => :hour, :hashed_label => false }
     end
     
     def prefix
@@ -28,7 +27,7 @@ module Redistat
     attr_reader :date
     
     def depth
-      @options[:depth]
+      options[:depth]
     end
     
     def scope

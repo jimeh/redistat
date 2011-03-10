@@ -69,7 +69,7 @@ describe Redistat::Summary do
   
   it "should not store key group summaries when option is disabled" do
     stats = {"views" => 3, "visitors/eu" => 2, "visitors/us" => 4}
-    Redistat::Summary.update_all(@key, stats, :hour, nil, false)
+    Redistat::Summary.update_all(@key, stats, :hour, {:enable_grouping => false})
     summary = db.hgetall(@key.to_s(:hour))
     summary.should have(3).items
     summary["views"].should == "3"

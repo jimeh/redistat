@@ -1,24 +1,23 @@
 module Redistat
   class Label
     include Database
+    include Options
     
-    attr_reader :connection_ref
-    
-    def self.create(name, options = {})
-      self.new(name, options).save
+    def default_options
+      { :hashed_label => false }
     end
     
-    def initialize(str, options = {})
-      @options = options
+    def self.create(name, opts = {})
+      self.new(name, opts).save
+    end
+    
+    def initialize(str, opts = {})
+      parse_options(opts)
       @raw = str.to_s
     end
     
     def to_s
       @raw
-    end
-
-    def db
-      super(@options[:connection_ref])
     end
     
     def name
@@ -35,6 +34,7 @@ module Redistat
     end
     
     def saved?
+      return true unless @options[:hashed_label]
       @saved ||= false
     end
     
