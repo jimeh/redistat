@@ -66,7 +66,7 @@ module Redistat
       end
     end
     
-    def groups # TODO: Is this useless?
+    def groups
       @groups ||= @label.groups.map do |label|
         self.class.new(@scope, label, self.date, @options)
       end
