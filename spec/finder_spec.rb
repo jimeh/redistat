@@ -91,19 +91,36 @@ describe Redistat::Finder do
     lambda { Redistat::Finder.find(:from => 3.hours.ago) }.should raise_error(Redistat::InvalidOptions)
   end
   
-  it "should find children" do
-    Redistat::Key.new("PageViews", "message/public/die").update_index
-    Redistat::Key.new("PageViews", "message/public/live").update_index
-    Redistat::Key.new("PageViews", "message/public/fester").update_index
-    members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}message/public") # checking 'message/public'
-    options = {:scope => "PageViews", :label => "message/public", :from => @two_hours_ago, :till => @one_hour_ago, :depth => :hour, :interval => :hour}
-    finder = Redistat::Finder.new(options)
-    finder.children.first.should be_a(Redistat::Finder)
-    subs = finder.children.map { |f| f.options[:label].me }
-    subs.should have(3).items
-    subs.should include('die')
-    subs.should include('live')
-    subs.should include('fester')
+  describe "Grouping" do
+    before(:each) do
+      @options = {:scope => "PageViews", :label => "message/public", :from => @two_hours_ago, :till => @one_hour_ago, :depth => :hour, :interval => :hour}
+      @finder = Redistat::Finder.new(@options)
+    end
+    
+    it "should return parent finder" do
+      @finder.instance_variable_get("@parent").should be_nil
+      @finder.parent.should be_a(Redistat::Finder)
+      @finder.instance_variable_get("@parent").should_not be_nil
+      @finder.parent.options[:label].to_s.should == 'message'
+      @finder.label('message')
+      @finder.instance_variable_get("@parent").should be_nil
+      @finder.parent.should_not be_nil
+      @finder.parent.options[:label].should be_nil
+      @finder.parent.parent.should be_nil
+    end
+    
+    it "should find children" do
+      Redistat::Key.new("PageViews", "message/public/die").update_index
+      Redistat::Key.new("PageViews", "message/public/live").update_index
+      Redistat::Key.new("PageViews", "message/public/fester").update_index
+      members = db.smembers("#{@scope}#{Redistat::LABEL_INDEX}message/public") # checking 'message/public'
+      @finder.children.first.should be_a(Redistat::Finder)
+      subs = @finder.children.map { |f| f.options[:label].me }
+      subs.should have(3).items
+      subs.should include('die')
+      subs.should include('live')
+      subs.should include('fester')
+    end
   end
   
   describe "Lazy-Loading" do

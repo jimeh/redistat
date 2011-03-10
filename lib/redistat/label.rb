@@ -29,7 +29,7 @@ module Redistat
     end
     
     def save
-      @saved = db.hset(KEY_LEBELS, hash, self.to_s) if @options[:hashed_label]
+      @saved = db.hset(KEY_LABELS, hash, self.to_s) if @options[:hashed_label]
       self
     end
     
