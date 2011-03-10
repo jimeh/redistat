@@ -69,6 +69,10 @@ module Redistat
       all.each_with_index(&block)
     end
     
+    def parent
+      @parent ||= self.class.new(options.merge(:label => options[:label].parent)) unless options[:label].nil?
+    end
+    
     def children
       build_key.children.map { |key|
         self.class.new(options.merge(:label => key.label.to_s))
@@ -88,8 +92,8 @@ module Redistat
     end
     
     def label(label)
-      reset! if !options[:label].nil? && options[:label].to_s != label
-      options[:label] = Label.new(label)
+      reset! if options.has_key?(:label) && options[:label].to_s != label.to_s
+      options[:label] = (!label.nil?) ? Label.new(label) : nil
       self
     end
     
@@ -181,6 +185,7 @@ module Redistat
 
     def reset!
       @result = nil
+      @parent = nil
     end
     
     def valid_options?
