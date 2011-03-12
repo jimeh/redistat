@@ -1,3 +1,5 @@
+require 'redistat/finder/date_set'
+
 module Redistat
   class Finder
     include Database

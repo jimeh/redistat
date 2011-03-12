@@ -44,8 +44,11 @@ describe Redistat::Finder do
     finder = Redistat::Finder.depth(:hour)
     finder.options[:depth].should == :hour
     
-    finder = Redistat::Finder.interval(:hour)
-    finder.options[:interval].should == :hour
+    finder = Redistat::Finder.interval(true)
+    finder.options[:interval].should be_true
+    
+    finder = Redistat::Finder.interval(false)
+    finder.options[:interval].should be_false
     
   end
   

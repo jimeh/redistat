@@ -18,10 +18,10 @@ module Redistat
       
       if options[:enable_grouping]
         stats = inject_group_summaries(stats)
-        key.groups.each { |k|
+        key.groups.each do |k|
           update_key(k, stats, depth_limit, options[:connection_ref])
           k.update_index if options[:label_indexing]
-        }
+        end
       else
         update_key(key, stats, depth_limit, options[:connection_ref])
       end
@@ -43,6 +43,7 @@ module Redistat
     end
     
     def self.inject_group_summaries!(stats)
+      summaries = {}
       stats.each do |key, value|
         parts = key.to_s.split(GROUP_SEPARATOR)
         parts.pop
@@ -51,11 +52,11 @@ module Redistat
           parts.each do |part|
             sum_parts << part
             sum_key = sum_parts.join(GROUP_SEPARATOR)
-            (stats.has_key?(sum_key)) ? stats[sum_key] += value : stats[sum_key] = value
+            (summaries.has_key?(sum_key)) ? summaries[sum_key] += value : summaries[sum_key] = value
           end
         end
       end
-      stats
+      stats.merge_and_incr!(summaries)
     end
     
     def self.inject_group_summaries(stats)
