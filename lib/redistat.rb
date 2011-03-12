@@ -26,10 +26,7 @@ require 'redistat/scope'
 require 'redistat/summary'
 require 'redistat/version'
 
-require 'redistat/core_ext/date'
-require 'redistat/core_ext/time'
-require 'redistat/core_ext/fixnum'
-require 'redistat/core_ext/bignum'
+require 'redistat/core_ext'
 
 module Redistat
   
