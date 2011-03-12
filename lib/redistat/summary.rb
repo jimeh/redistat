@@ -18,10 +18,10 @@ module Redistat
       
       if options[:enable_grouping]
         stats = inject_group_summaries(stats)
-        key.groups.each { |k|
+        key.groups.each do |k|
           update_key(k, stats, depth_limit, options[:connection_ref])
           k.update_index if options[:label_indexing]
-        }
+        end
       else
         update_key(key, stats, depth_limit, options[:connection_ref])
       end
