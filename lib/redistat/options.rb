@@ -5,8 +5,6 @@ module Redistat
       base.extend(ClassMethods)
     end
     
-    class InvalidDefaultOptions < ArgumentError; end
-    
     module ClassMethods
       def option_accessor(*opts)
         opts.each do |option|
