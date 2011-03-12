@@ -1,13 +1,19 @@
 
 require 'rubygems'
-require 'active_support'
-require 'active_support/hash_with_indifferent_access' if !{}.respond_to?(:with_indifferent_access) # Active Support 2.x and 3.x
-require 'redis'
 require 'date'
 require 'time'
-require 'time_ext'
-require 'json'
 require 'digest/sha1'
+
+# Active Support 2.x or 3.x
+require 'active_support'
+if !{}.respond_to?(:with_indifferent_access)
+  require 'active_support/core_ext/hash/indifferent_access'
+  require 'active_support/core_ext/hash/reverse_merge'
+end
+
+require 'time_ext'
+require 'redis'
+require 'json'
 
 require 'redistat/options'
 require 'redistat/connection'
@@ -17,7 +23,6 @@ require 'redistat/date'
 require 'redistat/date_helper'
 require 'redistat/event'
 require 'redistat/finder'
-require 'redistat/finder/date_set'
 require 'redistat/key'
 require 'redistat/label'
 require 'redistat/model'
