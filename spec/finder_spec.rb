@@ -31,7 +31,7 @@ describe Redistat::Finder do
     
     finder = Redistat::Finder.label("hello")
     finder.options[:label].to_s.should == "hello"
-    finder.label.to_s.shold == "hello"
+    finder.label.to_s.should == "hello"
     
     finder = Redistat::Finder.dates(@two_hours_ago, @one_hour_ago)
     finder.options[:from].should == @two_hours_ago
