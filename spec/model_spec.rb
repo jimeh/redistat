@@ -28,6 +28,11 @@ describe Redistat::Model do
     finder.options[:till].should  == one_hour_ago
   end
   
+  it "should #find_event" do
+    Redistat::Event.should_receive(:find).with('ModelHelper1', 1)
+    ModelHelper1.find_event(1)
+  end
+  
   it "should listen to model-defined options" do
     ModelHelper2.depth.should == :day
     ModelHelper2.store_event.should == true
