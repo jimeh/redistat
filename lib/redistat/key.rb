@@ -30,13 +30,14 @@ module Redistat
       options[:depth]
     end
     
-    def scope
-      @scope.to_s
-    end
+    # def scope
+    #   @scope.to_s
+    # end
     
     def scope=(input)
       @scope = (input.instance_of?(Redistat::Scope)) ? input : Scope.new(input)
     end
+    attr_reader :scope
     
     def label=(input)
       @label = (input.instance_of?(Redistat::Label)) ? input : Label.create(input, @options)

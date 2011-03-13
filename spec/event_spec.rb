@@ -17,7 +17,7 @@ describe Redistat::Event do
   
   it "should initialize properly" do
     @event.id.should be_nil
-    @event.scope.should == @scope
+    @event.scope.to_s.should == @scope
     @event.label.to_s.should == @label
     @event.label_hash.should == @label_hash
     @event.date.to_time.to_s.should == @date.to_s
@@ -63,7 +63,7 @@ describe Redistat::Event do
   it "should find event by id" do
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta).save
     fetched = Redistat::Event.find(@scope, @event.id)
-    @event.scope.should == fetched.scope
+    @event.scope.to_s.should == fetched.scope.to_s
     @event.label.to_s.should == fetched.label.to_s
     @event.date.to_s.should == fetched.date.to_s
   end
