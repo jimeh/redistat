@@ -91,7 +91,7 @@ module Redistat
       event = db.hgetall "#{scope}#{KEY_EVENT}#{id}"
       return nil if event.size == 0
       self.new( event["scope"], event["label"], event["date"], JSON.parse(event["stats"]),
-                JSON.parse(event["meta"]), JSON.parse(event["options"]), false )
+                JSON.parse(event["options"]), JSON.parse(event["meta"]), false )
     end
     
   end

@@ -8,8 +8,8 @@ describe Redistat::Event do
     @scope = "PageViews"
     @label = "about_us"
     @label_hash = Digest::SHA1.hexdigest(@label)
-    @stats = {:views => 1}
-    @meta = {:user_id => 239}
+    @stats = {'views' => 1}
+    @meta = {'user_id' => 239}
     @options = {:depth => :hour}
     @date = Time.now
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options, @meta)
@@ -66,6 +66,8 @@ describe Redistat::Event do
     @event.scope.to_s.should == fetched.scope.to_s
     @event.label.to_s.should == fetched.label.to_s
     @event.date.to_s.should == fetched.date.to_s
+    @event.stats.should == fetched.stats
+    @event.meta.should == fetched.meta
   end
   
   it "should store summarized statistics" do
