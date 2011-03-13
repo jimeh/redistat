@@ -13,7 +13,7 @@ describe Redistat::Key do
   end
   
   it "should initialize properly" do
-    @key.scope.should == @scope
+    @key.scope.to_s.should == @scope
     @key.label.to_s.should == @label
     @key.label_hash.should == @label_hash
     @key.groups.map { |k| k.instance_variable_get("@label") }.should == @key.instance_variable_get("@label").groups
@@ -44,10 +44,10 @@ describe Redistat::Key do
   
   it "should allow changing attributes" do
     # scope
-    @key.scope.should == @scope
+    @key.scope.to_s.should == @scope
     @scope = "VisitorCount"
     @key.scope = @scope
-    @key.scope.should == @scope
+    @key.scope.to_s.should == @scope
     # date
     @key.date.to_time.to_s.should == @date.to_s
     @date = Time.now

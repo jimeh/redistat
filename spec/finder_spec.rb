@@ -25,31 +25,36 @@ describe Redistat::Finder do
     finder.options[:label].to_s.should == options[:label]
     finder.options.should == options.merge(:scope => finder.options[:scope], :label => finder.options[:label])
     
+    finder = Redistat::Finder.scope("hello")
+    finder.options[:scope].to_s.should == "hello"
+    finder.scope.to_s.should == "hello"
+    
+    finder = Redistat::Finder.label("hello")
+    finder.options[:label].to_s.should == "hello"
+    finder.label.to_s.should == "hello"
+    
     finder = Redistat::Finder.dates(@two_hours_ago, @one_hour_ago)
     finder.options[:from].should == @two_hours_ago
     finder.options[:till].should == @one_hour_ago
     
-    finder = Redistat::Finder.scope("hello")
-    finder.options[:scope].to_s.should == "hello"
-    
-    finder = Redistat::Finder.label("hello")
-    finder.options[:label].to_s.should == "hello"
-    
     finder = Redistat::Finder.from(@two_hours_ago)
     finder.options[:from].should == @two_hours_ago
+    finder.from.should == @two_hours_ago
     
     finder = Redistat::Finder.till(@one_hour_ago)
     finder.options[:till].should == @one_hour_ago
+    finder.till.should == @one_hour_ago
     
     finder = Redistat::Finder.depth(:hour)
     finder.options[:depth].should == :hour
+    finder.depth.should == :hour
     
     finder = Redistat::Finder.interval(true)
     finder.options[:interval].should be_true
-    
+    finder.interval.should be_true
     finder = Redistat::Finder.interval(false)
     finder.options[:interval].should be_false
-    
+    finder.interval.should be_false
   end
   
   it "should fetch stats properly" do

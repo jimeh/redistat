@@ -13,7 +13,7 @@ module Redistat
     # 
     
     def store(label, stats = {}, date = nil, opts = {}, meta = {})
-      Event.new(name, label, date, stats, options.merge(opts), meta).save
+      Event.new(self.name, label, date, stats, options.merge(opts), meta).save
     end
     alias :event :store
 
@@ -27,6 +27,10 @@ module Redistat
                     :label => label,
                     :from  => from,
                     :till  => till }.merge(options.merge(opts)) )
+    end
+    
+    def find_event(event_id)
+      Event.find(self.name, event_id)
     end
     
     
