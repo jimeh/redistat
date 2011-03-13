@@ -9,6 +9,10 @@ module Redistat
       end
 
       def find_date_sets(start_date, end_date, depth = nil, interval = false)
+        if depth.nil? && interval.is_a?(Symbol)
+          depth = interval
+          interval = true
+        end
         start_date = start_date.to_time if start_date.is_a?(::Date)
         end_date = end_date.to_time if end_date.is_a?(::Date)
         if !interval
