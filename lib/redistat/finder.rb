@@ -81,49 +81,56 @@ module Redistat
       }
     end
     
-    def connection_ref(ref)
+    def connection_ref(ref = nil)
+      return options[:connection_ref] if ref.nil?
       reset! if options[:connection_ref] != ref
       options[:connection_ref] = ref
       self
     end
     
-    def scope(scope)
-      reset! if !options[:scope].nil? && options[:scope].to_s != scope
-      options[:scope] = Scope.new(scope)
+    def scope(input = nil)
+      return options[:scope] if input.nil?
+      reset! if !options[:scope].nil? && options[:scope].to_s != input.to_s
+      options[:scope] = Scope.new(input)
       self
     end
     
-    def label(label)
-      reset! if options.has_key?(:label) && options[:label].to_s != label.to_s
-      options[:label] = (!label.nil?) ? Label.new(label) : nil
+    def label(input = nil)
+      return options[:label] if input.nil?
+      reset! if options.has_key?(:label) && options[:label].to_s != input.to_s
+      options[:label] = (!input.nil?) ? Label.new(input) : nil
       self
     end
     
-    def dates(from, till)
-      from(from).till(till)
+    def dates(start, finish)
+      from(start).till(finish)
     end
     alias :date :dates
     
-    def from(date)
+    def from(date = nil)
+      return options[:from] if date.nil?
       reset! if options[:from] != date
       options[:from] = date
       self
     end
     
-    def till(date)
+    def till(date = nil)
+      return options[:till] if date.nil?
       reset! if options[:till] != date
       options[:till] = date
       self
     end
     alias :until :till
     
-    def depth(unit)
+    def depth(unit = nil)
+      return options[:depth] if unit.nil?
       reset! if options[:depth] != unit
       options[:depth] = unit
       self
     end
     
-    def interval(unit)
+    def interval(unit = nil)
+      return options[:interval] if unit.nil?
       reset! if options[:interval] != unit
       options[:interval] = unit
       self
