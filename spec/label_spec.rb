@@ -25,6 +25,19 @@ describe Redistat::Label do
     db.hget(Redistat::KEY_LABELS, label.hash).should == name
   end
   
+  it "should join labels" do
+    include Redistat
+    label = Label.join('email', 'message', 'public')
+    label.should be_a(Label)
+    label.to_s.should == 'email/message/public'
+    label = Label.join(Label.new('email'), Label.new('message'), Label.new('public'))
+    label.should be_a(Label)
+    label.to_s.should == 'email/message/public'
+    label = Label.join('email', '', 'message', nil, 'public')
+    label.should be_a(Label)
+    label.to_s.should == 'email/message/public'
+  end
+  
   describe "Grouping" do
     before(:each) do
       @name = "message/public/offensive"

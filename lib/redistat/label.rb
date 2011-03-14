@@ -11,6 +11,11 @@ module Redistat
       self.new(name, opts).save
     end
     
+    def self.join(*args)
+      args = args.map {|i| i.to_s}
+      self.new(args.reject {|i| i.blank? }.join(GROUP_SEPARATOR))
+    end
+    
     def initialize(str, opts = {})
       parse_options(opts)
       @raw = str.to_s
