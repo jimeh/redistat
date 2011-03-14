@@ -61,7 +61,6 @@ module Redistat
     
     def update_index
       @label.groups.each do |label|
-        # break if label.parent.nil?
         parent = (label.parent || "")
         db.sadd("#{scope}#{LABEL_INDEX}#{parent}", label.me)
       end
