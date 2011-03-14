@@ -46,6 +46,15 @@ describe Redistat::Summary do
     end
   end
   
+  it "should update summaries even if no label is set" do
+    key = Redistat::Key.new(@scope, nil, @date, {:depth => :day})
+    Redistat::Summary.update(key, @stats, :hour)
+    summary = db.hgetall(key.to_s(:hour))
+    summary.should have(2).items
+    summary["views"].should == "3"
+    summary["visitors"].should == "2"
+  end
+  
   it "should inject stats key grouping summaries" do
     hash = { "count/hello" => 3, "count/world"   => 7,
              "death/bomb"  => 4, "death/unicorn" => 3,

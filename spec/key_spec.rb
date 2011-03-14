@@ -28,6 +28,8 @@ describe Redistat::Key do
       @key.to_s(props.last).should == "#{@scope}/#{@label}:#{@key.date.to_s(props.last)}"
       props.pop
     end
+    key = Redistat::Key.new(@scope, nil, @date, {:depth => :hour})
+    key.to_s.should == "#{@scope}:#{key.date.to_s(:hour)}"
   end
   
   it "should abide to hashed_label option" do
