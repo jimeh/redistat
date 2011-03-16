@@ -37,7 +37,7 @@ describe Redistat::Model do
     ModelHelper2.depth.should == :day
     ModelHelper2.store_event.should == true
     ModelHelper2.hashed_label.should == true
-    ModelHelper2.class_name.should be_nil
+    ModelHelper2.scope.should be_nil
     
     ModelHelper1.depth.should == nil
     ModelHelper1.store_event.should == nil
@@ -55,7 +55,7 @@ describe Redistat::Model do
     ModelHelper1.store_event.should == nil
     ModelHelper1.hashed_label.should == nil
     
-    ModelHelper4.class_name.should == "FancyHelper"
+    ModelHelper4.scope.should == "FancyHelper"
     ModelHelper4.send(:name).should == "FancyHelper"
   end
   

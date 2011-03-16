@@ -39,12 +39,12 @@ module Redistat
     #
     
     option_accessor :depth
-    option_accessor :class_name
+    option_accessor :scope
     option_accessor :store_event
     option_accessor :hashed_label
     option_accessor :label_indexing
     
-    alias :scope :class_name
+    alias :class_name :scope
     
     def connect_to(opts = {})
       Connection.create(opts.merge(:ref => name))
@@ -62,7 +62,7 @@ module Redistat
     alias :redis :connection
     
     def name
-      options[:class_name] || (@name ||= self.to_s)
+      options[:scope] || (@name ||= self.to_s)
     end
       
   end

@@ -25,6 +25,6 @@ end
 class ModelHelper4
   include Redistat::Model
   
-  class_name "FancyHelper"
+  scope "FancyHelper"
   
 end
