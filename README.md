@@ -1,4 +1,4 @@
-# Redistat
+# Redistat #
 
 A Redis-backed statistics storage and querying library written in Ruby.
 
@@ -10,68 +10,197 @@ Redistat was originally created to replace a small hacked together statistics co
 
 Redis fits perfectly with all of these requirements. It has atomic operations like increment, and it's lightning fast, meaning if the data is structured well, the initial stats reporting call will store data in a format that's instantly retrievable just as fast.
 
-## Installation
+## Installation ##
 
     gem install redistat
 
 If you are using Ruby 1.8.x, it's recommended you also install the `SystemTimer` gem, as the Redis gem will otherwise complain.
 
-## Usage
+## Usage (Crash Course) ##
 
-The simplest way to use Redistat is through the model wrapper.
+view\_stats.rb:
 
-    class VisitorStats
+    require 'redistat'
+    
+    class ViewStats
       include Redistat::Model
     end
 
-Before any of you Rails-purists start complaining about the model name being plural, I want to point out that it makes sense with Redistat, cause a model doesn't exactly return a specific row or object. But I'm getting ahead of myself.
 
-To store statistics we essentially tell Redistat that an event has occurred with a label of X, and statistics of Y. So let's say we want to store a page view event on the `/about` page on a site:
+### Simple Example ###
 
-    VisitorStats.store('/about', {:views => 1})
+Store:
 
-In the above case "`/about`" is the label under which the stats are grouped, and the statistics associated with the event is simply a normal Ruby hash, except all values need to be integers, or Redis' increment calls won't work.
+    ViewStats.store('hello', {:world => 4})
+    ViewStats.store('hello', {:world => 2}, 2.hours.ago)
 
-To later retrieve statistics, we use the `fetch` method:
+Fetch:
 
-    stats = VisitorStats.fetch('/about', 2.hour.ago, Time.now)
-    # stats => [{:views => 1}]
-    # stats.total => {:views => 1}
-
-The fetch method requires 3 arguments, a label, a start time, and an end time. Fetch returns a `Redistat::Collection` object, which is normal Ruby Array with a couple of added methods, like total shown above.
-
-For more detailed usage, please check spec files, and source code till I have time to write up a complete readme.
-
-
-## Some Technical Details
-
-To give a brief look into how Redistat works internally to store statistics, I'm going to use the examples above. The store method accepts a Ruby Hash with statistics to store. Redistat stores all statistics as hashes in Redis. It stores summaries of the stats for the specific time when it happened and all it's parent time groups (second, minute, hour, day, month, year). The default depth Redistat goes to is hour, unless the `depth` option is passed to `store` or `fetch`.
-
-In short, the above call to `store` creates the following keys in Redis:
-
-    VisitorStats//about:2010
-    VisitorStats//about:201011
-    VisitorStats//about:20101124
-    VisitorStats//about:2010112401
-
-Each of these keys in Redis are a hash, containing the sums of each statistic point reported for the time frame the key represents. In this case there's two slashes, cause the label we used was “`/about`”, and the scope (class name when used through the model wrapper) and the label are separated with a slash.
-
-When retrieving statistics for a given date range, Redistat figures out how to do the least number of calls to Redis to fetch all relevant data. For example, if you want the sum of stats from the 4th till the last of November, the full month of November would first be fetched, then the first 3 days of November would be fetched and removed from the full month stats.
+    ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).all
+      #=> [{'world' => 4}]
+    ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).total
+      #=> {'world' => 4}
+    ViewStats.find('hello', 3.hour.ago, 1.hour.from_now).total
+      #=> {'world' => 6}
 
 
-## Todo
+### Advanced Example ###
 
-* Proper/complete readme.
+Store page view on product #44 from Chrome 11:
+
+    ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+    
+Fetch product #44 stats:
+
+    ViewStats.find('views/product/44', 23.hours.ago, 1.hour.from_now).total
+      #=> { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+
+Store a page view on product #32 from Firefox 3:
+
+    ViewStats.store('views/product/32', {'count/firefox/3' => 1})
+
+Fetch product #32 stats:
+    
+    ViewStats.find('views/product/32', 23.hours.ago, 1.hour.from_now).total
+      #=> { 'count' => 1, 'count/firefox' => 1, 'count/firefox/3' => 1 }
+
+Fetch stats for all products:
+
+    ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now).total
+      #=> { 'count'           => 2,
+      #     'count/chrome'    => 1,
+      #     'count/chrome/11' => 1,
+      #     'count/firefox'   => 1,
+      #     'count/firefox/3' => 1 }
+
+Store a 404 error view:
+
+    ViewStats.store('views/error/404', {'count/chrome/9' => 1})
+
+Fetch stats for all views across the board:
+
+    ViewStats.find('views', 23.hours.ago, 1.hour.from_now).total
+      #=> { 'count'           => 3,
+      #     'count/chrome'    => 2,
+      #     'count/chrome/9'  => 1,
+      #     'count/chrome/11' => 1,
+      #     'count/firefox'   => 1,
+      #     'count/firefox/3' => 1 }
+
+Fetch list of products known to Redistat:
+
+    finder = ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now)
+    finder.children.map { |child| child.label.me }
+      #=> [ "32", "44" ]
+    finder.children.map { |child| child.label.to_s }
+      #=> [ "views/products/32", "views/products/44" ]
+    finder.children.map { |child| child.total }
+      #=> [ { "count" => 1, "count/firefox" => 1, "count/firefox/3" => 1 },
+      #     { "count" => 1, "count/chrome"  => 1, "count/chrome/11" => 1 } ]
+
+
+## Terminology ##
+
+### Scope ###
+
+A type of global-namespace for storing data. When using the `Redistat::Model` wrapper, the scope is automatically set to the class name. In the examples above, the scope is `ViewStats`. Can be overridden by calling the `#scope` class method on your model class.
+
+### Label ###
+
+Identifier string to separate different types and groups of statistics from each other. The first argument of the `#store`, `#find`, and `#fetch` methods is the label that you're storing to, or fetching from.
+
+Labels support multiple grouping levels by splitting the label string with `/` and storing the same stats for each level. For example, when storing data to a label called `views/product/44`, the data is stored for the label you specify, and also for `views/product` and `views`.
+
+A word of caution: Don't use a crazy number of group levels. As two levels causes twice as many `hincrby` calls to Redis as not using the grouping feature. Hence using 10 grouping levels, causes 10 times as many write calls to Redis.
+
+### Input Statistics Data ###
+
+You provide Redistat with the data you want to store using a Ruby Hash. This data is then stored in a corresponding Redis hash with identical key/field names.
+
+Key names in the hash also support grouping features similar to those available for Labels. Again, the more levels you use, the more write calls to Redis, so avoid using 10-15 levels.
+
+### Depth (Storage Accuracy) ###
+
+Define how accurately data should be stored, and how accurately it's looked up when fetching it again. By default Redistat uses a depth value of `:hour`, which means it's impossible to separate two events which were stored at 10:18 and 10:23. In Redis they are both stored within a date key of `2011031610`.
+
+You can set depth within your model using the `#depth` class method. Available depths are: `:year`, `:month`, `:day`, `:hour`, `:min`, `:sec`
+
+### Time Ranges ###
+
+When you fetch data, you need to specify a start and an end time. The selection behavior can seem a bit weird at first when, but makes sense when you understand how Redistat works internally.
+
+For example, if we are using a Depth value of `:hour`, and we trigger a fetch call starting at `1.hour.ago` (13:34), till `Time.now` (14:34), only stats from 13:00:00 till 13:59:59 are returned, as they were all stored within the key for the 13th hour. If both 13:00 and 14:00 was returned, you would get results from two hole hours. Hence if you want up to the second data, use an end time of `1.hour.from_now`.
+
+### The Finder Object ###
+
+Calling the `#find` method on a Redistat model class returns a `Redistat::Finder` object. The finder is a lazy-loaded gateway to your data. Meaning you can create a new finder, and modify instantiated finder's label, scope, dates, and more. It does not call Redis and fetch the data until you call `#total`, `#all`, `#map`, `#each`, or `#each_with_index` on the finder.
+
+This section does need further expanding as there's a lot to cover when it comes to the finder.
+
+
+
+## Internals ##
+
+### Storing / Writing ###
+
+Redistat stores all data into a Redis hash keys. The Redis key name the used consists of three parts. The scope, label, and datetime:
+
+    {scope}/{label}:{datetime}
+
+For example, this...
+
+    ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+
+...would store the follow hash of data...
+
+    { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+    
+...to all 12 of these Redis hash keys...
+
+    ViewStats/views:2011
+    ViewStats/views:201103
+    ViewStats/views:20110315
+    ViewStats/views:2011031510
+    ViewStats/views/product:2011
+    ViewStats/views/product:201103
+    ViewStats/views/product:20110315
+    ViewStats/views/product:2011031510
+    ViewStats/views/product/44:2011
+    ViewStats/views/product/44:201103
+    ViewStats/views/product/44:20110315
+    ViewStats/views/product/44:2011031510
+
+...by creating the Redis key, and/or hash field if needed, otherwise it simply increments the already existing data.
+
+It would also create the following Redis sets to keep track of which child labels are available:
+
+    ViewStats.label_index:
+    ViewStats.label_index:views
+    ViewStats.label_index:views/product
+
+It should now be more obvious to you why you should think about how you use the grouping capabilities so you don't go crazy and use 10-15 levels. Storing is done through Redis' `hincrby` call, which only supports a single key/field combo. Meaning the above example would call `hincrby` a total of 36 times to store the data, and `sadd` a total of 3 times to ensure the label index is accurate. 39 calls is however not a problem for Redis, most calls happen in less than 0.15ms (0.00015 seconds) on my local machine.
+
+
+### Fetching / Reading ###
+
+By default when fetching statistics, Redistat will figure out how to do the least number of reads from Redis. First it checks how long range you're fetching. If whole days, months or years for example fit within the start and end dates specified, it will fetch the one key for the day/month/year in question. It further drills down to the smaller units.
+
+It is also intelligent enough to not fetch each day from 3-31 of a month, instead it would fetch the data for the whole month and the first two days, which are then removed from the summary of the whole month. This means three calls to `hgetall` instead of 29 if each whole day was fetched.
+
+
+## Todo ##
+
+* More details in Readme.
 * Documentation.
 * Anything else that becomes apparent after real-world use.
 
 
-## Credits
+## Credits ##
 
 [Global Personals](http://globalpersonals.co.uk/) deserves a thank you. Currently the primary user of Redistat, they've allowed me to spend some company time to further develop the project.
 
 
-## Note on Patches/Pull Requests
+## Note on Patches/Pull Requests ##
  
 * Fork the project.
 * Make your feature addition or bug fix.
@@ -82,7 +211,7 @@ When retrieving statistics for a given date range, Redistat figures out how to d
 * Send me a pull request. Bonus points for topic branches.
 
 
-## License and Copyright
+## License and Copyright ##
 
 Copyright (c) 2011 Jim Myhrberg.
 
