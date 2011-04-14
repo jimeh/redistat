@@ -3,33 +3,34 @@ include Redistat
 
 describe Redistat::Connection do
   
+  before(:each) do
+    @redis = Redistat.redis
+  end
+  
   it "should have a valid Redis client instance" do
     Redistat.redis.should_not be_nil
   end
 
   it "should have initialized custom testing connection" do
-    redis = Redistat.redis
-    redis.client.host.should == '127.0.0.1'
-    redis.client.port.should == 8379
-    redis.client.db.should == 15
+    @redis.client.host.should == '127.0.0.1'
+    @redis.client.port.should == 8379
+    @redis.client.db.should == 15
   end
   
   it "should be able to set and get data" do
-    redis = Redistat.redis
-    redis.set("hello", "world")
-    redis.get("hello").should == "world"
-    redis.del("hello").should be_true
+    @redis.set("hello", "world")
+    @redis.get("hello").should == "world"
+    @redis.del("hello").should be_true
   end
   
   it "should be able to store hashes to Redis" do
-    redis = Redistat.redis
-    redis.hset("hash", "field", "1")
-    redis.hget("hash", "field").should == "1"
-    redis.hincrby("hash", "field", 1)
-    redis.hget("hash", "field").should == "2"
-    redis.hincrby("hash", "field", -1)
-    redis.hget("hash", "field").should == "1"
-    redis.del("hash")
+    @redis.hset("hash", "field", "1")
+    @redis.hget("hash", "field").should == "1"
+    @redis.hincrby("hash", "field", 1)
+    @redis.hget("hash", "field").should == "2"
+    @redis.hincrby("hash", "field", -1)
+    @redis.hget("hash", "field").should == "1"
+    @redis.del("hash")
   end
   
   it "should be accessible from Redistat module" do
