@@ -59,4 +59,9 @@ describe Redistat::Connection do
     Redistat.connect(:port => 8379, :db => 15)
   end
   
+  # TODO: Test thread-safety
+  it "should be thread-safe" do
+    pending("need to figure out a way to test thread-safety")
+  end
+  
 end
