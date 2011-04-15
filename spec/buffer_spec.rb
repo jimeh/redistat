@@ -51,7 +51,7 @@ describe Redistat::Buffer do
     @buffer.send(:reset_queue, true).should == {:hello => 'world'}
   end
   
-  it "should flush data into Summary.update properly" do
+  it "should #flush_data into Summary.update properly" do
     # the root level key value doesn't actually matter, but it's something like this...
     data = {'ScopeName/label/goes/here:2011:nil:true:true' => {
       :key => mock("Key"),
@@ -62,6 +62,14 @@ describe Redistat::Buffer do
     item = data.first[1]
     Redistat::Summary.should_receive(:update).with(item[:key], item[:stats], item[:depth_limit], item[:connection_ref])
     @buffer.send(:flush_data, data)
+  end
+  
+  it "should build #buffer_key correctly" do
+    key = mock('Key', :to_s => "Scope/label:2011")
+    opts = {:enable_grouping => true, :label_indexing => false, :connection_ref => nil}
+    @buffer.send(:buffer_key, key, opts).should == "#{key.to_s}::true:false"
+    opts = {:enable_grouping => false, :label_indexing => true, :connection_ref => :omg}
+    @buffer.send(:buffer_key, key, opts).should == "#{key.to_s}:omg:false:true"
   end
   
 end
