@@ -10,30 +10,38 @@ module Redistat
           :connection_ref => nil }
       end
       
+      def buffer
+        Redistat.buffer
+      end
+      
       def update_all(key, stats = {}, depth_limit = nil, opts = {})
         stats ||= {}
-        return nil if stats.size == 0
+        return if stats.empty?
         
         options = default_options.merge((opts || {}).reject { |k,v| v.nil? })
         
         depth_limit ||= key.depth
         
-        update(key, stats, depth_limit, options[:enable_grouping], options[:connection_ref], options)
+        update_through_buffer(key, stats, depth_limit, options)
+      end
+      
+      def update_through_buffer(*args)
+        update(*args) unless buffer.store(*args)
+      end
+      
+      def update(key, stats, depth_limit, opts)
+        if opts[:enable_grouping]
+          stats = inject_group_summaries(stats)
+          key.groups.each do |k|
+            update_key(k, stats, depth_limit, opts[:connection_ref])
+            k.update_index if opts[:label_indexing]
+          end
+        else
+          update_key(key, stats, depth_limit, opts[:connection_ref])
+        end
       end
       
       private
-      
-      def update(key, stats, depth_limit, enable_grouping, connection_ref, options)
-        if enable_grouping
-          stats = inject_group_summaries(stats)
-          key.groups.each do |k|
-            update_key(k, stats, depth_limit, connection_ref)
-            k.update_index if options[:label_indexing]
-          end
-        else
-          update_key(key, stats, depth_limit, connection_ref)
-        end
-      end
       
       def update_key(key, stats, depth_limit, connection_ref)
         Date::DEPTHS.each do |depth|
