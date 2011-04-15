@@ -21,6 +21,7 @@ require 'redistat/mixins/synchronize'
 require 'redistat/mixins/database'
 require 'redistat/mixins/date_helper'
 require 'redistat/connection'
+require 'redistat/buffer'
 require 'redistat/collection'
 require 'redistat/date'
 require 'redistat/event'
@@ -48,6 +49,18 @@ module Redistat
   class RedisServerIsTooOld < Exception; end
   
   class << self
+    
+    def buffer
+      Buffer.instance
+    end
+    
+    def buffer_size
+      buffer.size
+    end
+    
+    def buffer_size=(size)
+      buffer.size = size
+    end
     
     def thread_safe
       Synchronize.thread_safe
