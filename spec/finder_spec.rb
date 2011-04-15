@@ -194,13 +194,13 @@ describe Redistat::Finder do
   
   def create_example_stats
     key = Redistat::Key.new(@scope, @label, (first = Time.parse("2010-05-14 13:43")))
-    Redistat::Summary.update(key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 13:53"))
-    Redistat::Summary.update(key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, Time.parse("2010-05-14 14:52"))
-    Redistat::Summary.update(key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, key, @stats, :hour)
     key = Redistat::Key.new(@scope, @label, (last = Time.parse("2010-05-14 15:02")))
-    Redistat::Summary.update(key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, key, @stats, :hour)
     [first - 1.hour, last + 1.hour]
   end
   
