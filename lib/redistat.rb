@@ -3,6 +3,7 @@ require 'rubygems'
 require 'date'
 require 'time'
 require 'digest/sha1'
+require 'monitor'
 
 # Active Support 2.x or 3.x
 require 'active_support'
@@ -16,6 +17,7 @@ require 'redis'
 require 'json'
 
 require 'redistat/options'
+require 'redistat/synchronize'
 require 'redistat/connection'
 require 'redistat/database'
 require 'redistat/collection'
@@ -46,6 +48,14 @@ module Redistat
   class RedisServerIsTooOld < Exception; end
   
   class << self
+    
+    def thread_safe
+      Synchronize.thread_safe
+    end
+    
+    def thread_safe=(value)
+      Synchronize.thread_safe = value
+    end
     
     def connection(ref = nil)
       Connection.get(ref)
