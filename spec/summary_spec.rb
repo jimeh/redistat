@@ -13,19 +13,19 @@ describe Redistat::Summary do
   end
   
   it "should update a single summary properly" do
-    Redistat::Summary.update(@key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, @key, @stats, :hour)
     summary = db.hgetall(@key.to_s(:hour))
     summary.should have(2).items
     summary["views"].should == "3"
     summary["visitors"].should == "2"
     
-    Redistat::Summary.update(@key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, @key, @stats, :hour)
     summary = db.hgetall(@key.to_s(:hour))
     summary.should have(2).items
     summary["views"].should == "6"
     summary["visitors"].should == "4"
     
-    Redistat::Summary.update(@key, {"views" => -4, "visitors" => -3}, :hour)
+    Redistat::Summary.send(:update_fields, @key, {"views" => -4, "visitors" => -3}, :hour)
     summary = db.hgetall(@key.to_s(:hour))
     summary.should have(2).items
     summary["views"].should == "2"
@@ -48,7 +48,7 @@ describe Redistat::Summary do
   
   it "should update summaries even if no label is set" do
     key = Redistat::Key.new(@scope, nil, @date, {:depth => :day})
-    Redistat::Summary.update(key, @stats, :hour)
+    Redistat::Summary.send(:update_fields, key, @stats, :hour)
     summary = db.hgetall(key.to_s(:hour))
     summary.should have(2).items
     summary["views"].should == "3"
