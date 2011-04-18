@@ -3,6 +3,7 @@ require 'rubygems'
 require 'date'
 require 'time'
 require 'digest/sha1'
+require 'monitor'
 
 # Active Support 2.x or 3.x
 require 'active_support'
@@ -15,12 +16,15 @@ require 'time_ext'
 require 'redis'
 require 'json'
 
-require 'redistat/options'
+require 'redistat/mixins/options'
+require 'redistat/mixins/synchronize'
+require 'redistat/mixins/database'
+require 'redistat/mixins/date_helper'
+
 require 'redistat/connection'
-require 'redistat/database'
+require 'redistat/buffer'
 require 'redistat/collection'
 require 'redistat/date'
-require 'redistat/date_helper'
 require 'redistat/event'
 require 'redistat/finder'
 require 'redistat/key'
@@ -32,6 +36,7 @@ require 'redistat/summary'
 require 'redistat/version'
 
 require 'redistat/core_ext'
+
 
 module Redistat
   
@@ -46,6 +51,26 @@ module Redistat
   class RedisServerIsTooOld < Exception; end
   
   class << self
+    
+    def buffer
+      Buffer.instance
+    end
+    
+    def buffer_size
+      buffer.size
+    end
+    
+    def buffer_size=(size)
+      buffer.size = size
+    end
+    
+    def thread_safe
+      Synchronize.thread_safe
+    end
+    
+    def thread_safe=(value)
+      Synchronize.thread_safe = value
+    end
     
     def connection(ref = nil)
       Connection.get(ref)
@@ -67,4 +92,10 @@ module Redistat
     end
     
   end
+end
+
+
+# ensure buffer is flushed on program exit
+Kernel.at_exit do
+  Redistat.buffer.flush(true)
 end

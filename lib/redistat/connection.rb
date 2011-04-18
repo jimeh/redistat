@@ -1,29 +1,41 @@
+require 'monitor'
+
 module Redistat
   module Connection
     
     REQUIRED_SERVER_VERSION = "1.3.10"
     
+    # TODO: Create a ConnectionPool instance object using Sychronize mixin to replace Connection class
+    
     class << self
+      
+      # TODO: clean/remove all ref-less connections
       
       def get(ref = nil)
         ref ||= :default
-        connections[references[ref]] || create
+        synchronize do
+          connections[references[ref]] || create
+        end
       end
       
       def add(conn, ref = nil)
         ref ||= :default
-        check_redis_version(conn)
-        references[ref] = conn.client.id
-        connections[conn.client.id] = conn
+        synchronize do
+          check_redis_version(conn)
+          references[ref] = conn.client.id
+          connections[conn.client.id] = conn
+        end
       end
       
       def create(options = {})
-        #TODO clean/remove all ref-less connections
-        ref = options.delete(:ref) || :default
-        options.reverse_merge!(default_options)
-        conn = (connections[connection_id(options)] ||= connection(options))
-        references[ref] = conn.client.id
-        conn
+        synchronize do
+          options = options.clone
+          ref = options.delete(:ref) || :default
+          options.reverse_merge!(default_options)
+          conn = (connections[connection_id(options)] ||= connection(options))
+          references[ref] = conn.client.id
+          conn
+        end
       end
       
       def connections
@@ -36,9 +48,12 @@ module Redistat
       
       private
       
-      def check_redis_version(conn)
-        raise RedisServerIsTooOld if conn.info["redis_version"] < REQUIRED_SERVER_VERSION
-        conn
+      def monitor
+        @monitor ||= Monitor.new
+      end
+      
+      def synchronize(&block)
+        monitor.synchronize(&block)
       end
       
       def connection(options)
@@ -46,8 +61,13 @@ module Redistat
       end
       
       def connection_id(options = {})
-        options.reverse_merge!(default_options)
+        options = options.reverse_merge(default_options)
         "redis://#{options[:host]}:#{options[:port]}/#{options[:db]}"
+      end
+      
+      def check_redis_version(conn)
+        raise RedisServerIsTooOld if conn.info["redis_version"] < REQUIRED_SERVER_VERSION
+        conn
       end
       
       def default_options
