@@ -30,20 +30,20 @@ describe Redistat::Buffer do
   
   it "should only flush buffer if buffer size is greater than or equal to buffer size setting" do
     @buffer.size.should == 0
-    @buffer.queue.size.should == 0
+    @buffer.send(:queue).size.should == 0
     @buffer.send(:should_flush?).should be_false
-    @buffer.queue[:hello] = 'world'
+    @buffer.send(:queue)[:hello] = 'world'
     @buffer.send(:should_flush?).should be_true
     @buffer.size = 5
     @buffer.send(:should_flush?).should be_false
-    3.times { |i| @buffer.queue[i] = i.to_s }
+    3.times { |i| @buffer.send(:queue)[i] = i.to_s }
     @buffer.send(:should_flush?).should be_false
-    @buffer.queue[4] = '4'
+    @buffer.send(:queue)[4] = '4'
     @buffer.send(:should_flush?).should be_true
   end
   
   it "should force flush queue irregardless of result of #should_flush? when #reset_queue is called with true" do
-    @buffer.queue[:hello] = 'world'
+    @buffer.send(:queue)[:hello] = 'world'
     @buffer.send(:should_flush?).should be_true
     @buffer.size = 2
     @buffer.send(:should_flush?).should be_false

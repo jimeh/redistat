@@ -13,10 +13,6 @@ module Redistat
     end
     attr_writer :size
     
-    def queue
-      @queue ||= {}
-    end
-    
     def store(key, stats, depth_limit, opts)
       return false unless should_buffer?
       
@@ -51,6 +47,10 @@ module Redistat
     end
     
     private
+    
+    def queue
+      @queue ||= {}
+    end
     
     def should_buffer?
       size > 1 # buffer size of 1 would be equal to not using buffer
