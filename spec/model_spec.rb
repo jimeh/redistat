@@ -156,4 +156,49 @@ describe Redistat::Model do
     stats.total[:weight].should == 617
   end
   
+  describe "Write Buffer" do
+    before(:each) do
+      Redistat.buffer_size = 20
+    end
+    
+    after(:each) do
+      Redistat.buffer_size = 0
+    end
+    
+    it "should buffer calls in memory before committing to Redis" do
+      14.times do
+        ModelHelper1.store("sheep.black", {:count => 1, :weight => 461}, @time.hours_ago(4))
+      end
+      ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1)).total.should == {}
+      
+      5.times do
+        ModelHelper1.store("sheep.black", {:count => 1, :weight => 156}, @time)
+      end
+      ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1)).total.should == {}
+      
+      ModelHelper1.store("sheep.black", {:count => 1, :weight => 156}, @time)
+      stats = ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1))
+      stats.total["count"].should == 20
+      stats.total["weight"].should == 7390
+    end
+    
+    it "should force flush buffer when #flush(true) is called" do
+      ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1)).total.should == {}
+      14.times do
+        ModelHelper1.store("sheep.black", {:count => 1, :weight => 461}, @time.hours_ago(4))
+      end
+      ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1)).total.should == {}
+      Redistat.buffer.flush(true)
+      
+      stats = ModelHelper1.fetch("sheep.black", @time.hours_ago(5), @time.hours_since(1))
+      stats.total["count"].should == 14
+      stats.total["weight"].should == 6454
+    end
+  end
+  
 end
+
+
+
+
+
