@@ -5,7 +5,7 @@ module Redistat
     
     REQUIRED_SERVER_VERSION = "1.3.10"
     
-    # TODO: Create a ConnectionPool instance object to replace Connection class
+    # TODO: Create a ConnectionPool instance object using Sychronize mixin to replace Connection class
     
     class << self
       
