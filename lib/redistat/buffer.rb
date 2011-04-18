@@ -13,6 +13,10 @@ module Redistat
     end
     attr_writer :size
     
+    def count
+      @count ||= 0
+    end
+    
     def store(key, stats, depth_limit, opts)
       return false unless should_buffer?
       
@@ -27,7 +31,8 @@ module Redistat
                              :opts        => opts }
         end
         
-        queue[buffkey][:stats].merge_and_incr!(hash)
+        queue[buffkey][:stats].merge_and_incr!(stats)
+        incr_count
         
         # return items to be flushed if buffer size limit has been reached
         to_flush = reset_queue
@@ -48,6 +53,12 @@ module Redistat
     
     private
     
+    # should always be called from within a synchronize block
+    def incr_count
+      @count ||= 0
+      @count += 1
+    end
+    
     def queue
       @queue ||= {}
     end
@@ -58,21 +69,22 @@ module Redistat
     
     # should always be called from within a synchronize block
     def should_flush?
-      (!queue.blank? && queue.size >= size)
+      (!queue.blank? && count >= size)
     end
     
     # returns items to be flushed if buffer size limit has been reached
     # should always be called from within a synchronize block
     def reset_queue(force = false)
-      return {} if !force || should_flush?
+      return {} if !force && !should_flush?
       data = queue
       @queue = {}
+      @count = 0
       data
     end
     
     def flush_data(buffer_data)
       buffer_data.each do |k, item|
-        Summary.update(item[:key], item[:stats], item[:depth_limit], item[:connection_ref])
+        Summary.update(item[:key], item[:stats], item[:depth_limit], item[:opts])
       end
     end
     
