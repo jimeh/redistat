@@ -9,9 +9,16 @@ module Redistat
     end
     
     def size
-      @size ||= 0
+      synchronize do
+        @size ||= 0
+      end
     end
-    attr_writer :size
+    
+    def size=(value)
+      synchronize do
+        @size = value
+      end
+    end
     
     def count
       @count ||= 0
