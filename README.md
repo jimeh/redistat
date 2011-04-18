@@ -25,6 +25,10 @@ view\_stats.rb:
     class ViewStats
       include Redistat::Model
     end
+    
+    # if using Redistat in multiple threads set this
+    # somewhere in the beginning of the execution stack
+    Redistat.thread_safe = true
 
 
 ### Simple Example ###
@@ -186,6 +190,12 @@ It should now be more obvious to you why you should think about how you use the 
 By default when fetching statistics, Redistat will figure out how to do the least number of reads from Redis. First it checks how long range you're fetching. If whole days, months or years for example fit within the start and end dates specified, it will fetch the one key for the day/month/year in question. It further drills down to the smaller units.
 
 It is also intelligent enough to not fetch each day from 3-31 of a month, instead it would fetch the data for the whole month and the first two days, which are then removed from the summary of the whole month. This means three calls to `hgetall` instead of 29 if each whole day was fetched.
+
+### Buffer ###
+
+The buffer is a new, still semi-beta, feature aimed to reduce the number of Redis `hincrby` that Redistat sends. This should only really be useful when you're hitting north of 30,000 Redis requests per second, if your Redis server has limited resources, or against my recommendation you've opted to use 10, 20, or more label grouping levels.
+
+Buffering tries to fold together multiple `store` calls into as few as possible by merging the statistics hashes from all calls and groups them based on scope, label, date depth, and more. You configure the the buffer by setting `Redistat.buffer_size` to an integer higher than 1. This basically tells Redistat how many `store` calls to buffer in memory before writing all data to Redis.
 
 
 ## Todo ##
