@@ -119,9 +119,9 @@ describe Redistat::Buffer do
   describe "Thread-Safety" do
     it "should read/write to buffer queue in a thread-safe manner" do
       
-      # This spec passes wether thread safety is enabled or not. In short I need
-      # better specs for thread-safety, and personally a better understanding of
-      # thread-safety in general.
+      # Setting thread_safe to false only makes the spec fail with
+      # JRuby. 1.8.x and 1.9.x both pass fine for some reason
+      # regardless of what the thread_safe option is set to.
       Redistat.thread_safe = true
       
       key = mock('Key', :to_s => "Scope/labelx:2011")
@@ -150,7 +150,7 @@ describe Redistat::Buffer do
       threads.each { |t| t.join }
     end
     
-    it "should have better specs that actually fail when thread-safety is off"
+    it "should have specs that fail on 1.8.x/1.9.x when thread_safe is disabled"
     
   end
   
