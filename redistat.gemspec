@@ -18,14 +18,13 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
-  
+
   s.add_runtime_dependency 'activesupport', '>= 2.3.6'
   s.add_runtime_dependency 'json', '>= 1.4.0'
   s.add_runtime_dependency 'redis', '>= 2.1.0'
   s.add_runtime_dependency 'time_ext', '>= 0.2.9'
-  
+
   s.add_development_dependency 'rake', '>= 0.8.7'
   s.add_development_dependency 'rspec', '>= 2.1.0'
-  s.add_development_dependency 'rcov', '>= 0.9.9'
   s.add_development_dependency 'yard', '>= 0.6.3'
 end
