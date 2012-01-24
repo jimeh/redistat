@@ -133,7 +133,7 @@ You can set depth within your model using the `#depth` class method. Available d
 
 When you fetch data, you need to specify a start and an end time. The selection behavior can seem a bit weird at first when, but makes sense when you understand how Redistat works internally.
 
-For example, if we are using a Depth value of `:hour`, and we trigger a fetch call starting at `1.hour.ago` (13:34), till `Time.now` (14:34), only stats from 13:00:00 till 13:59:59 are returned, as they were all stored within the key for the 13th hour. If both 13:00 and 14:00 was returned, you would get results from two hole hours. Hence if you want up to the second data, use an end time of `1.hour.from_now`.
+For example, if we are using a Depth value of `:hour`, and we trigger a fetch call starting at `1.hour.ago` (13:34), till `Time.now` (14:34), only stats from 13:00:00 till 13:59:59 are returned, as they were all stored within the key for the 13th hour. If both 13:00 and 14:00 was returned, you would get results from two whole hours. Hence if you want up to the second data, use an end time of `1.hour.from_now`.
 
 ### The Finder Object ###
 
