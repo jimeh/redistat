@@ -20,87 +20,109 @@ If you are using Ruby 1.8.x, it's recommended you also install the `SystemTimer`
 
 view\_stats.rb:
 
-    require 'redistat'
-    
-    class ViewStats
-      include Redistat::Model
-    end
-    
-    # if using Redistat in multiple threads set this
-    # somewhere in the beginning of the execution stack
-    Redistat.thread_safe = true
+```ruby
+require 'redistat'
+
+class ViewStats
+  include Redistat::Model
+end
+
+# if using Redistat in multiple threads set this
+# somewhere in the beginning of the execution stack
+Redistat.thread_safe = true
+```
 
 
 ### Simple Example ###
 
 Store:
 
-    ViewStats.store('hello', {:world => 4})
-    ViewStats.store('hello', {:world => 2}, 2.hours.ago)
+```ruby
+ViewStats.store('hello', {:world => 4})
+ViewStats.store('hello', {:world => 2}, 2.hours.ago)
+```
 
 Fetch:
 
-    ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).all
-      #=> [{'world' => 4}]
-    ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).total
-      #=> {'world' => 4}
-    ViewStats.find('hello', 3.hour.ago, 1.hour.from_now).total
-      #=> {'world' => 6}
+```ruby
+ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).all
+  #=> [{'world' => 4}]
+ViewStats.find('hello', 1.hour.ago, 1.hour.from_now).total
+  #=> {'world' => 4}
+ViewStats.find('hello', 3.hour.ago, 1.hour.from_now).total
+  #=> {'world' => 6}
+```
 
 
 ### Advanced Example ###
 
 Store page view on product #44 from Chrome 11:
 
-    ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+```ruby
+ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+```
     
 Fetch product #44 stats:
 
-    ViewStats.find('views/product/44', 23.hours.ago, 1.hour.from_now).total
-      #=> { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+```ruby
+ViewStats.find('views/product/44', 23.hours.ago, 1.hour.from_now).total
+  #=> { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+```
 
 Store a page view on product #32 from Firefox 3:
 
-    ViewStats.store('views/product/32', {'count/firefox/3' => 1})
+```ruby
+ViewStats.store('views/product/32', {'count/firefox/3' => 1})
+```
 
 Fetch product #32 stats:
-    
-    ViewStats.find('views/product/32', 23.hours.ago, 1.hour.from_now).total
-      #=> { 'count' => 1, 'count/firefox' => 1, 'count/firefox/3' => 1 }
+
+```ruby
+ViewStats.find('views/product/32', 23.hours.ago, 1.hour.from_now).total
+  #=> { 'count' => 1, 'count/firefox' => 1, 'count/firefox/3' => 1 }
+```
 
 Fetch stats for all products:
 
-    ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now).total
-      #=> { 'count'           => 2,
-      #     'count/chrome'    => 1,
-      #     'count/chrome/11' => 1,
-      #     'count/firefox'   => 1,
-      #     'count/firefox/3' => 1 }
+```ruby
+ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now).total
+  #=> { 'count'           => 2,
+  #     'count/chrome'    => 1,
+  #     'count/chrome/11' => 1,
+  #     'count/firefox'   => 1,
+  #     'count/firefox/3' => 1 }
+```
 
 Store a 404 error view:
 
-    ViewStats.store('views/error/404', {'count/chrome/9' => 1})
+```ruby
+ViewStats.store('views/error/404', {'count/chrome/9' => 1})
+```
 
 Fetch stats for all views across the board:
 
-    ViewStats.find('views', 23.hours.ago, 1.hour.from_now).total
-      #=> { 'count'           => 3,
-      #     'count/chrome'    => 2,
-      #     'count/chrome/9'  => 1,
-      #     'count/chrome/11' => 1,
-      #     'count/firefox'   => 1,
-      #     'count/firefox/3' => 1 }
+```ruby
+ViewStats.find('views', 23.hours.ago, 1.hour.from_now).total
+  #=> { 'count'           => 3,
+  #     'count/chrome'    => 2,
+  #     'count/chrome/9'  => 1,
+  #     'count/chrome/11' => 1,
+  #     'count/firefox'   => 1,
+  #     'count/firefox/3' => 1 }
+```
 
 Fetch list of products known to Redistat:
 
-    finder = ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now)
-    finder.children.map { |child| child.label.me }
-      #=> [ "32", "44" ]
-    finder.children.map { |child| child.label.to_s }
-      #=> [ "views/products/32", "views/products/44" ]
-    finder.children.map { |child| child.total }
-      #=> [ { "count" => 1, "count/firefox" => 1, "count/firefox/3" => 1 },
-      #     { "count" => 1, "count/chrome"  => 1, "count/chrome/11" => 1 } ]
+```ruby
+finder = ViewStats.find('views/product', 23.hours.ago, 1.hour.from_now)
+finder.children.map { |child| child.label.me }
+  #=> [ "32", "44" ]
+finder.children.map { |child| child.label.to_s }
+  #=> [ "views/products/32", "views/products/44" ]
+finder.children.map { |child| child.total }
+  #=> [ { "count" => 1, "count/firefox" => 1, "count/firefox/3" => 1 },
+  #     { "count" => 1, "count/chrome"  => 1, "count/chrome/11" => 1 } ]
+```
 
 
 ## Terminology ##
@@ -153,11 +175,15 @@ Redistat stores all data into a Redis hash keys. The Redis key name the used con
 
 For example, this...
 
-    ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+```ruby
+ViewStats.store('views/product/44', {'count/chrome/11' => 1})
+```
 
 ...would store the follow hash of data...
 
-    { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+```ruby
+{ 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
+```
     
 ...to all 12 of these Redis hash keys...
 
