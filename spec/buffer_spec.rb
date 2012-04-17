@@ -78,9 +78,11 @@ describe Redistat::Buffer do
 
   it "should build #buffer_key correctly" do
     opts = {:enable_grouping => true, :label_indexing => false, :connection_ref => nil}
-    @buffer.send(:buffer_key, @key, opts).should == "#{@key.to_s}::true:false"
+    @buffer.send(:buffer_key, @key, opts).should ==
+      "#{@key.to_s}:connection_ref::enable_grouping:true:label_indexing:false"
     opts = {:enable_grouping => false, :label_indexing => true, :connection_ref => :omg}
-    @buffer.send(:buffer_key, @key, opts).should == "#{@key.to_s}:omg:false:true"
+    @buffer.send(:buffer_key, @key, opts).should ==
+      "#{@key.to_s}:connection_ref:omg:enable_grouping:false:label_indexing:true"
   end
 
   describe "Buffering" do

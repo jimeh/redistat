@@ -95,12 +95,15 @@ module Redistat
       end
     end
 
+    # depth_limit is not needed as it's evident in key.to_s
     def buffer_key(key, opts)
-      # depth_limit is not needed as it's evident in key.to_s
-      opts_index = Summary.default_options.keys.sort { |a,b| a.to_s <=> b.to_s }.map do |k|
-        opts[k] if opts.has_key?(k)
+      # covert keys to strings, as sorting a Hash with Symbol keys fails on
+      # Ruby 1.8.x.
+      opts = opts.inject({}) do |result, (k, v)|
+        result[k.to_s] = v
+        result
       end
-      "#{key.to_s}:#{opts_index.join(':')}"
+      "#{key.to_s}:#{opts.sort.flatten.join(':')}"
     end
 
   end
