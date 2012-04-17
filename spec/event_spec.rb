@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Redistat::Event do
   include Redistat::Database
-  
+
   before(:each) do
     db.flushdb
     @scope = "PageViews"
@@ -14,7 +14,7 @@ describe Redistat::Event do
     @date = Time.now
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options, @meta)
   end
-  
+
   it "should initialize properly" do
     @event.id.should be_nil
     @event.scope.to_s.should == @scope
@@ -41,7 +41,7 @@ describe Redistat::Event do
     @event.label.to_s.should == @label
     @event.label_hash.should == @label_hash
   end
-  
+
   it "should increment next_id" do
     event = Redistat::Event.new("VisitorCount", @label, @date, @stats, @options, @meta)
     @event.next_id.should == 1
@@ -49,7 +49,7 @@ describe Redistat::Event do
     @event.next_id.should == 2
     event.next_id.should == 2
   end
-  
+
   it "should store event properly" do
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta)
     @event.new?.should be_true
@@ -59,7 +59,7 @@ describe Redistat::Event do
     keys.should include("#{@event.scope}#{Redistat::KEY_EVENT}#{@event.id}")
     keys.should include("#{@event.scope}#{Redistat::KEY_EVENT_IDS}")
   end
-  
+
   it "should find event by id" do
     @event = Redistat::Event.new(@scope, @label, @date, @stats, @options.merge({:store_event => true}), @meta).save
     fetched = Redistat::Event.find(@scope, @event.id)
@@ -69,7 +69,7 @@ describe Redistat::Event do
     @event.stats.should == fetched.stats
     @event.meta.should == fetched.meta
   end
-  
+
   it "should store summarized statistics" do
     2.times do |i|
       @event = Redistat::Event.new(@scope, @label, @date, @stats, @options, @meta).save
@@ -81,5 +81,5 @@ describe Redistat::Event do
       end
     end
   end
-  
+
 end

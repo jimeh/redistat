@@ -1,10 +1,10 @@
 module Redistat
   module Options
-    
+
     def self.included(base)
       base.extend(ClassMethods)
     end
-    
+
     module ClassMethods
       def option_accessor(*opts)
         opts.each do |option|
@@ -18,24 +18,24 @@ module Redistat
         end
       end
     end
-    
+
     def parse_options(opts)
       opts ||= {}
       @raw_options = opts
       @options = default_options.merge(opts.reject { |k,v| v.nil? })
     end
-    
+
     def default_options
       {}
     end
-    
+
     def options
       @options ||= {}
     end
-    
+
     def raw_options
       @raw_options ||= {}
     end
-    
+
   end
 end

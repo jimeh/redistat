@@ -39,58 +39,58 @@ require 'redistat/core_ext'
 
 
 module Redistat
-  
+
   KEY_NEXT_ID = ".next_id"
   KEY_EVENT = ".event:"
   KEY_LABELS = "Redistat.labels:" # used for reverse label hash lookup
   KEY_EVENT_IDS = ".event_ids"
   LABEL_INDEX = ".label_index:"
   GROUP_SEPARATOR = "/"
-  
+
   class InvalidOptions < ArgumentError; end
   class RedisServerIsTooOld < Exception; end
-  
+
   class << self
-    
+
     def buffer
       Buffer.instance
     end
-    
+
     def buffer_size
       buffer.size
     end
-    
+
     def buffer_size=(size)
       buffer.size = size
     end
-    
+
     def thread_safe
       Synchronize.thread_safe
     end
-    
+
     def thread_safe=(value)
       Synchronize.thread_safe = value
     end
-    
+
     def connection(ref = nil)
       Connection.get(ref)
     end
     alias :redis :connection
-    
+
     def connection=(connection)
       Connection.add(connection)
     end
     alias :redis= :connection=
-    
+
     def connect(options)
       Connection.create(options)
     end
-    
+
     def flush
       puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flushdb instead."
       connection.flushdb
     end
-    
+
   end
 end
 

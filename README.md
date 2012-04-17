@@ -61,7 +61,7 @@ Store page view on product #44 from Chrome 11:
 ```ruby
 ViewStats.store('views/product/44', {'count/chrome/11' => 1})
 ```
-    
+
 Fetch product #44 stats:
 
 ```ruby
@@ -184,7 +184,7 @@ ViewStats.store('views/product/44', {'count/chrome/11' => 1})
 ```ruby
 { 'count' => 1, 'count/chrome' => 1, 'count/chrome/11' => 1 }
 ```
-    
+
 ...to all 12 of these Redis hash keys...
 
     ViewStats/views:2011
@@ -237,7 +237,7 @@ Buffering tries to fold together multiple `store` calls into as few as possible 
 
 
 ## Note on Patches/Pull Requests ##
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a

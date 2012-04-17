@@ -2,13 +2,13 @@ require "spec_helper"
 
 describe "Thread-Safety" do
   include Redistat::Database
-  
+
   before(:each) do
     db.flushdb
   end
-  
+
   #TODO should have more comprehensive thread-safe tests
-  
+
   it "should incr in multiple threads" do
     threads = []
     50.times do
@@ -19,7 +19,7 @@ describe "Thread-Safety" do
     threads.each { |t| t.join }
     db.get("spec:incr").should == "50"
   end
-  
+
   it "should store event in multiple threads" do
     class ThreadSafetySpec
       include Redistat::Model
@@ -35,5 +35,5 @@ describe "Thread-Safety" do
     result.total[:count].should == 50
     result.total[:rand].should <= 250
   end
-  
+
 end

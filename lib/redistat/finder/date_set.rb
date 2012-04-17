@@ -1,7 +1,7 @@
 module Redistat
   class Finder
     class DateSet < Array
-      
+
       def initialize(start_date = nil, end_date = nil, depth = nil, interval = false)
         if !start_date.nil? && !end_date.nil?
           find_date_sets(start_date, end_date, depth, interval)
@@ -71,7 +71,7 @@ module Redistat
           end
           { :add => add, :rem => [] }
         elsif has_nunit
-          { :add => [end_date.beginning_of(nunit).to_rs.to_s(nunit)], 
+          { :add => [end_date.beginning_of(nunit).to_rs.to_s(nunit)],
             :rem => end_date.map_beginning_of_each(unit, :include_start => !lowest_depth).until(end_date.end_of(nunit)) { |t| t.to_rs.to_s(unit) } }
         else
           { :add => [], :rem => [] }
@@ -93,7 +93,7 @@ module Redistat
           { :add => [], :rem => [] }
         end
       end
-      
+
     end
   end
 end

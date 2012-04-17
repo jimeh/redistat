@@ -1,6 +1,6 @@
 module Redistat
   class Date
-    
+
     attr_accessor :year
     attr_accessor :month
     attr_accessor :day
@@ -9,9 +9,9 @@ module Redistat
     attr_accessor :sec
     attr_accessor :usec
     attr_accessor :depth
-    
+
     DEPTHS = [:year, :month, :day, :hour, :min, :sec, :usec]
-    
+
     def initialize(input, depth = nil)
       @depth = depth
       if input.is_a?(::Time)
@@ -26,12 +26,12 @@ module Redistat
         from_integer(input)
       end
     end
-    
+
     def to_t
       ::Time.local(@year, @month, @day, @hour, @min, @sec, @usec)
     end
     alias :to_time :to_t
-    
+
     def to_d
       ::Date.civil(@year, @month, @day)
     end
@@ -41,7 +41,7 @@ module Redistat
       to_time.to_i
     end
     alias :to_integer :to_i
-    
+
     def to_s(depth = nil)
       depth ||= @depth ||= :sec
       output = ""
@@ -57,9 +57,9 @@ module Redistat
       output
     end
     alias :to_string :to_s
-    
+
     private
-    
+
     def from_time(input)
       DEPTHS.each do |k|
         send("#{k}=", input.send(k))
@@ -74,15 +74,15 @@ module Redistat
         send("#{k}=", 0)
       end
     end
-    
+
     def from_integer(input)
       from_time(::Time.at(input))
     end
-    
+
     def from_string(input)
       input += "19700101000000"[input.size..-1] if input =~ /^\d\d\d[\d]+$/i
       from_time(::Time.parse(input))
     end
-    
+
   end
 end
