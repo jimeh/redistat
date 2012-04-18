@@ -1,66 +1,124 @@
 require "spec_helper"
 
-describe Redistat::Synchronize do
-  it { should respond_to(:monitor) }
-  it { should respond_to(:thread_safe) }
-  it { should respond_to(:thread_safe=) }
+module Redistat
+  describe Synchronize do
 
-  describe "instanciated class with Redistat::Synchronize included" do
-    subject { SynchronizeSpecHelper.new }
-    it { should respond_to(:monitor) }
-    it { should respond_to(:thread_safe) }
-    it { should respond_to(:thread_safe=) }
-    it { should respond_to(:synchronize) }
+    let(:klass) { Synchronize }
 
-  end
-
-  describe "#synchronize method" do
-
-    before(:each) do
-      Redistat::Synchronize.instance_variable_set("@thread_safe", nil)
-      @obj = SynchronizeSpecHelper.new
-    end
-
-    it "should share single Monitor object across all objects" do
-      @obj.monitor.should == Redistat::Synchronize.monitor
-    end
-
-    it "should share thread_safe option across all objects" do
-      obj2 = SynchronizeSpecHelper.new
-      Redistat::Synchronize.thread_safe.should be_false
-      @obj.thread_safe.should be_false
-      obj2.thread_safe.should be_false
-      @obj.thread_safe = true
-      Redistat::Synchronize.thread_safe.should be_true
-      @obj.thread_safe.should be_true
-      obj2.thread_safe.should be_true
-    end
-
-    it "should not synchronize when thread_safe is disabled" do
-      # monitor receives :synchronize twice cause #thread_safe is _always_ synchronized
-      Redistat::Synchronize.monitor.should_receive(:synchronize).twice
-      @obj.thread_safe.should be_false # first #synchronize call
-      @obj.synchronize { 'foo' } # one #synchronize call while checking #thread_safe
-    end
-
-    it "should synchronize when thread_safe is enabled" do
-      Monitor.class_eval {
-        # we're stubbing synchronize to ensure it's being called correctly, but still need it :P
-        alias :real_synchronize :synchronize
-      }
-      Redistat::Synchronize.monitor.should_receive(:synchronize).with.exactly(4).times.and_return { |block|
-        Redistat::Synchronize.monitor.real_synchronize(&block)
-      }
-      @obj.thread_safe.should be_false # first synchronize call
-      Redistat::Synchronize.thread_safe = true # second synchronize call
-      # two synchronize calls, once while checking thread_safe, once to call black
-      @obj.synchronize do
-        'foo'
+    describe '.included' do
+      it 'includes InstanceMethods in passed object' do
+        base = mock('Base')
+        base.should_receive(:include).with(klass::InstanceMethods)
+        klass.included(base)
       end
-    end
-  end
+    end # included
 
-end
+    describe '.monitor' do
+      it 'returns a Monitor instance' do
+        klass.monitor.should be_a(Monitor)
+      end
+
+      it 'caches Monitor instance' do
+        klass.monitor.object_id.should == klass.monitor.object_id
+      end
+    end # monitor
+
+    describe '.thread_safe' do
+      after { klass.instance_variable_set('@thread_safe', nil) }
+
+      it 'returns value of @thread_safe' do
+        klass.instance_variable_set('@thread_safe', true)
+        klass.thread_safe.should be_true
+      end
+
+      it 'defaults to false' do
+        klass.thread_safe.should be_false
+      end
+
+      it 'uses #synchronize' do
+        klass.monitor.should_receive(:synchronize).once
+        klass.thread_safe.should be_nil
+      end
+    end # thread_safe
+
+    describe '.thread_safe=' do
+      after { klass.instance_variable_set('@thread_safe', nil) }
+
+      it 'sets @thread_safe' do
+        klass.instance_variable_get('@thread_safe').should be_nil
+        klass.thread_safe = true
+        klass.instance_variable_get('@thread_safe').should be_true
+      end
+
+      it 'uses #synchronize' do
+        klass.monitor.should_receive(:synchronize).once
+        klass.thread_safe = true
+        klass.instance_variable_get('@thread_safe').should be_nil
+      end
+    end # thread_safe=
+
+    describe "InstanceMethods" do
+      subject { SynchronizeSpecHelper.new }
+
+      describe '.monitor' do
+        it 'defers to Redistat::Synchronize' do
+          klass.should_receive(:monitor).once
+          subject.monitor
+        end
+      end # monitor
+
+      describe '.thread_safe' do
+        it ' defers to Redistat::Synchronize' do
+          klass.should_receive(:thread_safe).once
+          subject.thread_safe
+        end
+      end # thread_safe
+
+      describe '.thread_safe=' do
+        it 'defers to Redistat::Synchronize' do
+          klass.should_receive(:thread_safe=).once.with(true)
+          subject.thread_safe = true
+        end
+      end # thread_safe=
+
+      describe 'when #thread_safe is true' do
+        before { subject.stub(:thread_safe).and_return(true) }
+
+        describe '.synchronize' do
+          it 'defers to #monitor' do
+            subject.monitor.should_receive(:synchronize).once
+            subject.synchronize { 'foo' }
+          end
+
+          it 'passes block along to #monitor.synchronize' do
+            yielded = false
+            subject.synchronize { yielded = true }
+            yielded.should be_true
+          end
+        end # synchronize
+      end # when #thread_safe is true
+
+      describe 'when #thread_safe is false' do
+        before { subject.stub(:thread_safe).and_return(false) }
+
+        describe '.synchronize' do
+          it 'does not defer to #monitor' do
+            subject.monitor.should_not_receive(:synchronize)
+            subject.synchronize { 'foo' }
+          end
+
+          it 'yields block' do
+            yielded = false
+            subject.synchronize { yielded = true }
+            yielded.should be_true
+          end
+        end # synchronize
+      end # when #thread_safe is false
+
+    end
+
+  end # Synchronize
+end # Redistat
 
 class SynchronizeSpecHelper
   include Redistat::Synchronize
