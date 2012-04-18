@@ -26,5 +26,6 @@ class ModelHelper4
   include Redistat::Model
 
   scope "FancyHelper"
+  expire :hour => 24*3600
 
 end

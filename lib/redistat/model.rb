@@ -46,6 +46,14 @@ module Redistat
 
     alias :class_name :scope
 
+    def expire(exp = nil)
+      if !exp.nil?
+        options[:expire] = exp.is_a?(Hash) ? exp : Hash.new(exp)
+      else
+        options[:expire]
+      end
+    end
+
     def connect_to(opts = {})
       Connection.create(opts.merge(:ref => name))
       options[:connection_ref] = name

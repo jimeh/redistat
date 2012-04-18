@@ -202,6 +202,36 @@ This section does need further expanding as there's a lot to cover when it
 comes to the finder.
 
 
+## Key Expiry
+
+Support for expiring keys from Redis is available, allowing you too keep
+varying levels of details for X period of time. This allows you easily keep
+things nice and tidy by only storing varying levels detailed stats only for as
+long as you need.
+
+In the below example we define how long Redis keys for varying depths are
+stored. Second by second stats are available for 10 minutes, minute by minute
+stats for 6 hours, hourly stats for 3 months, daily stats for 2 years, and
+yearly stats are retained forever.
+
+```ruby
+class ViewStats
+  include Redistat::Model
+
+  depth :sec
+
+  expire \
+    :sec => 10.minutes.to_i,
+    :min => 6.hours.to_i,
+    :hour => 3.months.to_i,
+    :day => 2.years.to_i
+end
+```
+
+Keep in mind that when storing stats for a custom date in the past for
+example, the expiry time for the keys will be relative to now. The values you
+specify are simply passed to the `Redis#expire` method.
+
 
 ## Internals
 

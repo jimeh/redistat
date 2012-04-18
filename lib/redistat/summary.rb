@@ -5,9 +5,12 @@ module Redistat
     class << self
 
       def default_options
-        { :enable_grouping => true,
-          :label_indexing => true,
-          :connection_ref => nil }
+        {
+          :enable_grouping => true,
+          :label_indexing  => true,
+          :connection_ref  => nil,
+          :expire          => {}
+        }
       end
 
       def buffer
@@ -29,30 +32,34 @@ module Redistat
         update(*args) unless buffer.store(*args)
       end
 
-      def update(key, stats, depth_limit, opts)
+      def update(key, stats, depth_limit, opts = {})
         if opts[:enable_grouping]
           stats = inject_group_summaries(stats)
           key.groups.each do |k|
-            update_key(k, stats, depth_limit, opts[:connection_ref])
+            update_key(k, stats, depth_limit, opts)
             k.update_index if opts[:label_indexing]
           end
         else
-          update_key(key, stats, depth_limit, opts[:connection_ref])
+          update_key(key, stats, depth_limit, opts)
         end
       end
 
       private
 
-      def update_key(key, stats, depth_limit, connection_ref)
+      def update_key(key, stats, depth_limit, opts = {})
         Date::DEPTHS.each do |depth|
-          update_fields(key, stats, depth, connection_ref)
+          update_fields(key, stats, depth, opts)
           break if depth == depth_limit
         end
       end
 
-      def update_fields(key, stats, depth, connection_ref = nil)
+      def update_fields(key, stats, depth, opts = {})
         stats.each do |field, value|
-          db(connection_ref).hincrby key.to_s(depth), field, value
+          db(opts[:connection_ref]).hincrby key.to_s(depth), field, value
+        end
+
+        if opts[:expire] && !opts[:expire][depth].nil?
+          db(opts[:connection_ref]).expire key.to_s(depth), opts[:expire][depth]
         end
       end
 
