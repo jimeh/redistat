@@ -52,6 +52,8 @@ module Redistat
 
   class << self
 
+    attr_writer :group_separator
+
     def buffer
       Buffer.instance
     end
@@ -89,6 +91,10 @@ module Redistat
     def flush
       puts "WARNING: Redistat.flush is deprecated. Use Redistat.redis.flushdb instead."
       connection.flushdb
+    end
+
+    def group_separator
+      @group_separator ||= GROUP_SEPARATOR
     end
 
   end

@@ -13,7 +13,7 @@ module Redistat
 
     def self.join(*args)
       args = args.map {|i| i.to_s}
-      self.new(args.reject {|i| i.blank? }.join(GROUP_SEPARATOR))
+      self.new(args.reject {|i| i.blank? }.join(Redistat.group_separator))
     end
 
     def initialize(str, opts = {})
@@ -48,16 +48,16 @@ module Redistat
     end
 
     def me
-      self.to_s.split(GROUP_SEPARATOR).last
+      self.to_s.split(Redistat.group_separator).last
     end
 
     def groups
       return @groups unless @groups.nil?
       @groups = []
       parent = ""
-      self.to_s.split(GROUP_SEPARATOR).each do |part|
+      self.to_s.split(Redistat.group_separator).each do |part|
         if !part.blank?
-          group = ((parent.blank?) ? "" : "#{parent}#{GROUP_SEPARATOR}") + part
+          group = ((parent.blank?) ? "" : "#{parent}#{Redistat.group_separator}") + part
           @groups << Label.new(group)
           parent = group
         end

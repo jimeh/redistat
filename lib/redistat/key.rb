@@ -56,7 +56,7 @@ module Redistat
       members = db.smembers("#{scope}#{LABEL_INDEX}#{@label}") || [] # older versions of Redis returns nil
       members.map { |member|
         child_label = [@label, member].reject { |i| i.nil? }
-        self.class.new(self.scope, child_label.join(GROUP_SEPARATOR), self.date, @options)
+        self.class.new(self.scope, child_label.join(Redistat.group_separator), self.date, @options)
       }
     end
 
