@@ -14,7 +14,8 @@ module Redistat
 
       def thread_safe
         monitor.synchronize do
-          @thread_safe ||= false
+          return @thread_safe unless @thread_safe.nil?
+          @thread_safe = false
         end
       end
 
