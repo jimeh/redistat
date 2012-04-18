@@ -10,6 +10,7 @@ describe Redistat::Summary do
     @date = Time.now
     @key = Redistat::Key.new(@scope, @label, @date, {:depth => :day})
     @stats = {"views" => 3, "visitors" => 2}
+    @expire = {:hour => 24*3600}
   end
 
   it "should update a single summary properly" do
@@ -30,6 +31,20 @@ describe Redistat::Summary do
     summary.should have(2).items
     summary["views"].should == "2"
     summary["visitors"].should == "1"
+  end
+
+  it "should set key expiry properly" do
+    Redistat::Summary.update_all(@key, @stats, :hour,{:expire => @expire})
+    ((24*3600)-1..(24*3600)+1).should include(db.ttl(@key.to_s(:hour)))
+    [:day, :month, :year].each do |depth|
+      db.ttl(@key.to_s(depth)).should == -1
+    end
+
+    db.flushdb
+    Redistat::Summary.update_all(@key, @stats, :hour, {:expire => {}})
+    [:hour, :day, :month, :year].each do |depth|
+      db.ttl(@key.to_s(depth)).should == -1
+    end
   end
 
   it "should update all summaries properly" do

@@ -38,6 +38,7 @@ describe Redistat::Model do
     ModelHelper2.store_event.should == true
     ModelHelper2.hashed_label.should == true
     ModelHelper2.scope.should be_nil
+    ModelHelper2.expire.should be_nil
 
     ModelHelper1.depth.should == nil
     ModelHelper1.store_event.should == nil
@@ -57,6 +58,7 @@ describe Redistat::Model do
 
     ModelHelper4.scope.should == "FancyHelper"
     ModelHelper4.send(:name).should == "FancyHelper"
+    ModelHelper4.expire.should == {:hour => 24*3600}
   end
 
   it "should store and fetch stats" do
