@@ -149,8 +149,8 @@ is the label that you're storing to, or fetching from.
 Labels support multiple grouping levels by splitting the label string with `/`
 and storing the same stats for each level. For example, when storing data to a
 label called `views/product/44`, the data is stored for the label you specify,
-and also for `views/product` and `views`. You may also configure a different 
-group separator using the `Redistat.group_separator` option. For example:
+and also for `views/product` and `views`. You may also configure a different
+group separator using the `Redistat.group_separator=` method. For example:
 
 ```ruby
 Redistat.group_separator = '|'
