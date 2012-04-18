@@ -52,8 +52,6 @@ module Redistat
 
   class << self
 
-    attr_writer :group_separator
-
     def buffer
       Buffer.instance
     end
@@ -96,6 +94,7 @@ module Redistat
     def group_separator
       @group_separator ||= GROUP_SEPARATOR
     end
+    attr_writer :group_separator
 
   end
 end
