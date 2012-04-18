@@ -32,7 +32,7 @@ module Redistat
         update(*args) unless buffer.store(*args)
       end
 
-      def update(key, stats, depth_limit, opts)
+      def update(key, stats, depth_limit, opts = {})
         if opts[:enable_grouping]
           stats = inject_group_summaries(stats)
           key.groups.each do |k|
@@ -46,14 +46,14 @@ module Redistat
 
       private
 
-      def update_key(key, stats, depth_limit, opts)
+      def update_key(key, stats, depth_limit, opts = {})
         Date::DEPTHS.each do |depth|
           update_fields(key, stats, depth, opts)
           break if depth == depth_limit
         end
       end
 
-      def update_fields(key, stats, depth, opts)
+      def update_fields(key, stats, depth, opts = {})
         stats.each do |field, value|
           db(opts[:connection_ref]).hincrby key.to_s(depth), field, value
         end
