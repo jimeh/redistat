@@ -66,13 +66,13 @@ module Redistat
       def inject_group_summaries!(stats)
         summaries = {}
         stats.each do |key, value|
-          parts = key.to_s.split(GROUP_SEPARATOR)
+          parts = key.to_s.split(Redistat.group_separator)
           parts.pop
           if parts.size > 0
             sum_parts = []
             parts.each do |part|
               sum_parts << part
-              sum_key = sum_parts.join(GROUP_SEPARATOR)
+              sum_key = sum_parts.join(Redistat.group_separator)
               (summaries.has_key?(sum_key)) ? summaries[sum_key] += value : summaries[sum_key] = value
             end
           end

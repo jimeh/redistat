@@ -136,4 +136,41 @@ describe Redistat::Summary do
     summary["visitors/us"].should == "8"
   end
 
+  it "should store label-based grouping enabled stats using a different group separator" do
+    Redistat.group_separator = '|'
+    stats = {"views" => 3, "visitors|eu" => 2, "visitors|us" => 4}
+    label = "views|about_us"
+    key = Redistat::Key.new(@scope, label, @date)
+    Redistat::Summary.update_all(key, stats, :hour)
+
+    key.groups[0].label.to_s.should == "views|about_us"
+    key.groups[1].label.to_s.should == "views"
+    child1 = key.groups[0]
+    parent = key.groups[1]
+
+    label = "views|contact"
+    key = Redistat::Key.new(@scope, label, @date)
+    Redistat::Summary.update_all(key, stats, :hour)
+
+    key.groups[0].label.to_s.should == "views|contact"
+    key.groups[1].label.to_s.should == "views"
+    child2 = key.groups[0]
+
+    summary = db.hgetall(child1.to_s(:hour))
+    summary["views"].should == "3"
+    summary["visitors|eu"].should == "2"
+    summary["visitors|us"].should == "4"
+
+    summary = db.hgetall(child2.to_s(:hour))
+    summary["views"].should == "3"
+    summary["visitors|eu"].should == "2"
+    summary["visitors|us"].should == "4"
+
+    summary = db.hgetall(parent.to_s(:hour))
+    summary["views"].should == "6"
+    summary["visitors|eu"].should == "4"
+    summary["visitors|us"].should == "8"
+    Redistat.group_separator = Redistat::GROUP_SEPARATOR
+  end
+
 end

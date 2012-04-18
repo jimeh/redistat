@@ -38,6 +38,21 @@ describe Redistat::Label do
     label.to_s.should == 'email/message/public'
   end
 
+  it "should allow you to use a different group separator" do
+    include Redistat
+    Redistat.group_separator = '|'
+    label = Label.join('email', 'message', 'public')
+    label.should be_a(Label)
+    label.to_s.should == 'email|message|public'
+    label = Label.join(Label.new('email'), Label.new('message'), Label.new('public'))
+    label.should be_a(Label)
+    label.to_s.should == 'email|message|public'
+    label = Label.join('email', '', 'message', nil, 'public')
+    label.should be_a(Label)
+    label.to_s.should == 'email|message|public'
+    Redistat.group_separator = Redistat::GROUP_SEPARATOR
+  end
+
   describe "Grouping" do
     before(:each) do
       @name = "message/public/offensive"
