@@ -1,4 +1,4 @@
-# Redistat #
+# Redistat [![Build Status](https://secure.travis-ci.org/jimeh/redistat.png)](http://travis-ci.org/jimeh/redistat)
 
 A Redis-backed statistics storage and querying library written in Ruby.
 
@@ -15,14 +15,14 @@ like increment, and it's lightning fast, meaning if the data is structured
 well, the initial stats reporting call will store data in a format that's
 instantly retrievable just as fast.
 
-## Installation ##
+## Installation
 
     gem install redistat
 
 If you are using Ruby 1.8.x, it's recommended you also install the
 `SystemTimer` gem, as the Redis gem will otherwise complain.
 
-## Usage (Crash Course) ##
+## Usage (Crash Course)
 
 view\_stats.rb:
 
@@ -39,7 +39,7 @@ Redistat.thread_safe = true
 ```
 
 
-### Simple Example ###
+### Simple Example
 
 Store:
 
@@ -60,7 +60,7 @@ ViewStats.find('hello', 3.hour.ago, 1.hour.from_now).total
 ```
 
 
-### Advanced Example ###
+### Advanced Example
 
 Store page view on product #44 from Chrome 11:
 
@@ -131,16 +131,16 @@ finder.children.map { |child| child.total }
 ```
 
 
-## Terminology ##
+## Terminology
 
-### Scope ###
+### Scope
 
 A type of global-namespace for storing data. When using the `Redistat::Model`
 wrapper, the scope is automatically set to the class name. In the examples
 above, the scope is `ViewStats`. Can be overridden by calling the `#scope`
 class method on your model class.
 
-### Label ###
+### Label
 
 Identifier string to separate different types and groups of statistics from
 each other. The first argument of the `#store`, `#find`, and `#fetch` methods
@@ -156,7 +156,7 @@ causes twice as many `hincrby` calls to Redis as not using the grouping
 feature. Hence using 10 grouping levels, causes 10 times as many write calls
 to Redis.
 
-### Input Statistics Data ###
+### Input Statistics Data
 
 You provide Redistat with the data you want to store using a Ruby Hash. This
 data is then stored in a corresponding Redis hash with identical key/field
@@ -166,7 +166,7 @@ Key names in the hash also support grouping features similar to those
 available for Labels. Again, the more levels you use, the more write calls to
 Redis, so avoid using 10-15 levels.
 
-### Depth (Storage Accuracy) ###
+### Depth (Storage Accuracy)
 
 Define how accurately data should be stored, and how accurately it's looked up
 when fetching it again. By default Redistat uses a depth value of `:hour`,
@@ -176,7 +176,7 @@ and 10:23. In Redis they are both stored within a date key of `2011031610`.
 You can set depth within your model using the `#depth` class method. Available
 depths are: `:year`, `:month`, `:day`, `:hour`, `:min`, `:sec`
 
-### Time Ranges ###
+### Time Ranges
 
 When you fetch data, you need to specify a start and an end time. The
 selection behavior can seem a bit weird at first when, but makes sense when
@@ -189,7 +189,7 @@ key for the 13th hour. If both 13:00 and 14:00 was returned, you would get
 results from two whole hours. Hence if you want up to the second data, use an
 end time of `1.hour.from_now`.
 
-### The Finder Object ###
+### The Finder Object
 
 Calling the `#find` method on a Redistat model class returns a
 `Redistat::Finder` object. The finder is a lazy-loaded gateway to your
@@ -203,9 +203,9 @@ comes to the finder.
 
 
 
-## Internals ##
+## Internals
 
-### Storing / Writing ###
+### Storing / Writing
 
 Redistat stores all data into a Redis hash keys. The Redis key name the used
 consists of three parts. The scope, label, and datetime:
@@ -258,7 +258,7 @@ accurate. 39 calls is however not a problem for Redis, most calls happen in
 less than 0.15ms (0.00015 seconds) on my local machine.
 
 
-### Fetching / Reading ###
+### Fetching / Reading
 
 By default when fetching statistics, Redistat will figure out how to do the
 least number of reads from Redis. First it checks how long range you're
@@ -271,7 +271,7 @@ instead it would fetch the data for the whole month and the first two days,
 which are then removed from the summary of the whole month. This means three
 calls to `hgetall` instead of 29 if each whole day was fetched.
 
-### Buffer ###
+### Buffer
 
 The buffer is a new, still semi-beta, feature aimed to reduce the number of
 Redis `hincrby` that Redistat sends. This should only really be useful when
@@ -287,21 +287,21 @@ Redistat how many `store` calls to buffer in memory before writing all data to
 Redis.
 
 
-## Todo ##
+## Todo
 
 * More details in Readme.
 * Documentation.
 * Anything else that becomes apparent after real-world use.
 
 
-## Credits ##
+## Credits
 
 [Global Personals](http://globalpersonals.co.uk/) deserves a thank
 you. Currently the primary user of Redistat, they've allowed me to spend some
 company time to further develop the project.
 
 
-## Note on Patches/Pull Requests ##
+## Note on Patches/Pull Requests
 
 * Fork the project.
 * Make your feature addition or bug fix.
@@ -313,7 +313,7 @@ company time to further develop the project.
 * Send me a pull request. Bonus points for topic branches.
 
 
-## License and Copyright ##
+## License and Copyright
 
 Copyright (c) 2011 Jim Myhrberg.
 
