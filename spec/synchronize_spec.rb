@@ -53,7 +53,10 @@ describe Redistat::Synchronize do
       }
       @obj.thread_safe.should be_false # first synchronize call
       Redistat::Synchronize.thread_safe = true # second synchronize call
-      @obj.synchronize { 'foo' } # two synchronize calls, once while checking thread_safe, once to call black
+      # two synchronize calls, once while checking thread_safe, once to call black
+      @obj.synchronize do
+        'foo'
+      end
     end
   end
 
