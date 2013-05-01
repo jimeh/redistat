@@ -96,11 +96,7 @@ module Redistat
     end
     attr_writer :group_separator
 
+    ObjectSpace.define_finalizer(self, proc { Redistat.buffer.flush (true) })
+
   end
-end
-
-
-# ensure buffer is flushed on program exit
-Kernel.at_exit do
-  Redistat.buffer.flush(true)
 end
