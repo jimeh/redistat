@@ -1,4 +1,4 @@
-class Fixnum
+class Integer
   include Redistat::DateHelper
 
   def to_time

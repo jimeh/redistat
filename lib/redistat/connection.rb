@@ -23,8 +23,8 @@ module Redistat
         ref ||= :default
         synchronize do
           check_redis_version(conn)
-          references[ref] = conn.client.id
-          connections[conn.client.id] = conn
+          references[ref] = conn._client.id
+          connections[conn._client.id] = conn
         end
       end
 
@@ -34,7 +34,7 @@ module Redistat
           ref = options.delete(:ref) || :default
           options.reverse_merge!(default_options)
           conn = (connections[connection_id(options)] ||= connection(options))
-          references[ref] = conn.client.id
+          references[ref] = conn._client.id
           conn
         end
       end
