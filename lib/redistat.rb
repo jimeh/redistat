@@ -20,7 +20,6 @@ require 'redistat/mixins/options'
 require 'redistat/mixins/synchronize'
 require 'redistat/mixins/database'
 require 'redistat/mixins/date_helper'
-
 require 'redistat/connection'
 require 'redistat/buffer'
 require 'redistat/collection'
@@ -36,6 +35,7 @@ require 'redistat/summary'
 require 'redistat/version'
 
 require 'redistat/core_ext'
+require 'redistat/redis'
 
 
 module Redistat
