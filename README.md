@@ -1,4 +1,5 @@
 # Redistat [![Build Status](https://secure.travis-ci.org/jimeh/redistat.png)](http://travis-ci.org/jimeh/redistat)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjimeh%2Fredistat.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjimeh%2Fredistat?ref=badge_shield)
 
 A Redis-backed statistics storage and querying library written in Ruby.
 
@@ -370,3 +371,6 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjimeh%2Fredistat.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjimeh%2Fredistat?ref=badge_large)
